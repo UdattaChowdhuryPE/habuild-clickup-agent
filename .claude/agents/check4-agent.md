@@ -60,4 +60,8 @@ Calculate compliance as: Valid Tasks / Total In-Scope Tasks × 100
 
 Status: ≥97% = Done, 30–96% = In Progress, <30% = Not Started
 
-If the next sprint list returns 0 tasks: report "CHECK 4 — Sprint N+1 Readiness: N/A → no tasks found in next sprint list"
+If the next sprint list returns 0 tasks:
+```
+CHECK 4 — Sprint N+1 Readiness: 100% → Done
+  Violations: None (no tasks in next sprint)
+```

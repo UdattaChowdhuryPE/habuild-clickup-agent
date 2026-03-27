@@ -75,9 +75,9 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
      - 30–96%: In Progress option ID
      - <30%: Not Started option ID
    - **Sprint N+1 dropdown handling:**
-     - If check4 returned a **valid compliance %** (e.g., "75% → In Progress"): include the mapped option ID in the custom_fields array
-     - If check4 returned **"N/A"** (outside window, no tasks, or similar): **omit the Sprint N+1 dropdown entry entirely from custom_fields** — do NOT clear or reset it; leave the column unchanged in the doc
-     - Record the "N/A" reason in the Observations/Comments text field (Sprint N+1 section)
+     - If check4 returned a **valid compliance %** (e.g., "75% → In Progress", "100% → Done"): include the mapped option ID in the custom_fields array
+     - If check4 returned **"N/A → outside readiness window"** (timing gate failed — check was not run): **omit the Sprint N+1 dropdown entry entirely from custom_fields** — do NOT clear or reset it; leave the column unchanged in the doc. Record "N/A — outside readiness window" in the Observations/Comments Sprint N+1 section.
+     - **All other check4 results** (including "0 tasks found") produce a valid compliance % and must be handled as normal — do NOT treat them as N/A.
 
 3. Build observations text following the Observations Format above.
 
@@ -105,7 +105,7 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
    CHECK 1 — Epics Setup: [%] → [Status]
    CHECK 2 — Backlog Hygiene: [%] → [Status]
    CHECK 3 — Key Fields Updated: [%] → [Status]
-   CHECK 4 — Sprint N+1: [% → Done/In Progress/Not Started] OR [N/A — outside window / no tasks / other reason]
+   CHECK 4 — Sprint N+1: [% → Done/In Progress/Not Started] OR [N/A — outside readiness window]
 
    [Observations block if any violations, using @[task name](taskId) mention syntax]
    ```
