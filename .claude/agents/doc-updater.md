@@ -108,7 +108,12 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
    CHECK 3 — Key Fields Updated: [%] → [Status]
    CHECK 4 — Sprint N+1: [%] → [Status] OR [N/A — outside readiness window]
 
-   [Observations block if any violations, using / Mention a Task mention syntax]
+   Observations (if any violations):
+   EPIC: /Mention a Task [taskId] — [reason]; ...
+   Backlog: /Mention a Task [taskId] — missing Epic; ...
+   Current Sprint: /Mention a Task [taskId] — [missing fields]; ...
+   Sprint N+1: /Mention a Task [taskId] — [missing fields]; ...
+   (Omit any section with no violations)
    ```
 
    Always include the CHECK 4 line, even if "N/A".
@@ -117,5 +122,6 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
 
 ## CRITICAL
 - ONLY write to Sprint Readiness list tasks (whitelisted IDs). Never modify or comment on POD tasks.
-- Comments must use ClickUp mention syntax for task references: @[task name](taskId)
+- Comments must reference tasks using: /Mention a Task [taskId]
+- The Observations/Comments custom field (text) continues to use: @[task name](taskId)
 - Pass option IDs (not labels) to dropdown custom fields
