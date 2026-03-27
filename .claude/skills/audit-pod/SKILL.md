@@ -77,7 +77,7 @@ Stop processing. Do NOT proceed to subsequent PODs or steps. Do NOT fill in plac
 Compute the window: `[current_sprint_end_date - 5 days, current_sprint_end_date]`
 - If today is within this window AND `next_sprint_list_id` is not null:
   - Use the Agent tool to invoke check4-agent as a sub-agent
-  - Pass: POD name, `next_sprint_list_id`, `today`, `current_sprint_end_date`
+  - Pass: POD name, `folder_id`, `next_sprint_list_id`, `today`, `current_sprint_end_date`
   - Receive: CHECK 4 result (compliance %, violations list)
 - Otherwise: Sprint N+1 result = "N/A — outside readiness window"
 
@@ -116,6 +116,7 @@ Always pass `statuses` to `filter_tasks` — never fetch everything then filter.
   - Exception to no-loop rule: filter_tasks response strips custom_fields; per-task lookups required to detect Epic connections
 - CHECK 3: `filter_tasks(list_ids=[backlog_list_id], statuses=[8 active statuses])`, then keep only tasks where locations includes active_sprint_list_id
 - CHECK 4: `filter_tasks(list_ids=[next_sprint_list_id], statuses=["Task Definition Complete", "Ready For Dev"])`
+  - Note: Sprint confirmation is now determined at the list level (via `clickup_get_folder`), not by task status
 General principle: Never call `clickup_get_task` in a loop UNLESS the batch tool doesn't return needed data.
 - CHECK 2: per-task get_task required — filter_tasks omits custom_fields
 - CHECK 3: per-task get_task required — filter_tasks omits time_estimate, points, and custom_fields
