@@ -58,30 +58,11 @@ Use the Agent tool to invoke check1-agent as a sub-agent:
 - Pass: POD name, `epic_list_id` (from table), `current_sprint_list_id` (from Step 1)
 - Receive back: CHECK 1 result block with compliance % and violations
 
-### Step 3: Run CHECK 2
-Use the Agent tool to invoke check2-agent as a sub-agent with EXACTLY this prompt (substitute values):
+### Step 3: Run CHECK 2 + CHECK 3
+Use the Agent tool to invoke check2-check3-agent as a sub-agent with EXACTLY this prompt (substitute values):
 
 ```
-Run CHECK 2 (Backlog Hygiene) for [POD name] POD.
-
-Workspace ID: [workspace_id]
-POD: [POD name]
-Backlog List ID: [backlog_list_id]
-
-You MUST call clickup_get_task individually for every non-exempt task to check the Epic custom field.
-Do NOT approximate, skip tasks, or assume Epic connections from task names alone.
-```
-
-⚠️ Do NOT add any additional validation instructions, field lists, or status criteria to this prompt.
-The agent's own definition governs all logic. Extra instructions override and corrupt it.
-
-Receive back: CHECK 2 result block with compliance % and violations
-
-### Step 4: Run CHECK 3
-Use the Agent tool to invoke check3-agent as a sub-agent with EXACTLY this prompt (substitute values):
-
-```
-Run CHECK 3 (Key Fields Updated) for [POD name] POD.
+Run CHECK 2 (Backlog Hygiene) and CHECK 3 (Key Fields Updated) for [POD name] POD.
 
 Workspace ID: [workspace_id]
 POD: [POD name]
@@ -89,14 +70,13 @@ Backlog List ID: [backlog_list_id]
 Current Sprint List ID: [current_sprint_list_id]
 ```
 
-⚠️ Do NOT add any field lists, status criteria, or validation instructions to this prompt.
-The agent validates: Assignee, Due Date, Priority, Time Estimate, Sprint Points, Sprint Type.
-Status is a FETCH filter only — do NOT pass status as a validation criterion.
+⚠️ Do NOT add any additional validation instructions, field lists, or status criteria to this prompt.
+The agent's own definition governs all logic. Extra instructions override and corrupt it.
 
-Receive back: CHECK 3 result block with compliance % and violations
+Receive back: both CHECK 2 and CHECK 3 result blocks with compliance % and violations
 
-### Step 4.5: Validate CHECK results
-Before proceeding, verify that all three check agents returned valid results:
+### Step 4: Validate CHECK results
+Before proceeding, verify that check1 and the combined check2-check3 agent all returned valid results:
 - Each result must contain a line like `CHECK N — Name: [%] → [Status]` with an actual compliance percentage
 - If any check agent returned empty, null, or no compliance %, print:
 ```
@@ -104,14 +84,9 @@ ERROR: check[N]-agent returned no data for [POD name]. Stopping audit.
 ```
 Stop processing. Do NOT proceed to subsequent steps or other PODs. Do NOT fill in placeholder/fabricated values.
 
-### Step 5: Sprint N+1 Check (timing-gated)
-Compute the window: `[current_sprint_end_date - 5 days, current_sprint_end_date]`
-- If today is within this window AND `next_sprint_list_id` was returned by pod-auditor:
-  - Use the Agent tool to invoke check4-agent as a sub-agent
-  - Pass: POD name, `next_sprint_list_id`, `today`, `current_sprint_end_date`
-  - Receive back: CHECK 4 (Sprint N+1) result block with compliance % and violations
-- If today is outside this window OR no next sprint was found:
-  - Sprint N+1 result = "N/A — outside readiness window"
+### Step 5: Sprint N+1 Check (TEMPORARILY DISABLED)
+> ⚠️ CHECK 4 is disabled. Do NOT invoke check4-agent. Always use: Sprint N+1 result = "N/A"
+> To re-enable: replace this block with the original step (check4-agent.md is unchanged).
 
 ### Step 6: Update Dashboard
 Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the following — do NOT omit any field:
@@ -121,8 +96,8 @@ Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the followi
 - Check 3 — Key Fields Updated: [compliance %] → [status label]
 - Check 4 — Sprint N+1: [compliance % or "N/A"] → [status label or "N/A"]
 - Observations (EPIC section): [verbatim violations from check1-agent, or "None"]
-- Observations (Backlog section): [verbatim violations from check2-agent, or "None"]
-- Observations (Current Sprint section): [verbatim violations from check3-agent, or "None"]
+- Observations (Backlog section): [verbatim violations from check2-check3-agent CHECK 2 block, or "None"]
+- Observations (Current Sprint section): [verbatim violations from check2-check3-agent CHECK 3 block, or "None"]
 - Observations (Sprint N+1 section): [verbatim violations from check4-agent, or "None", or "N/A — outside window"]
 
 ### Step 7: Print progress line

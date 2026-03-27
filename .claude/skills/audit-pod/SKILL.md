@@ -54,17 +54,12 @@ Use the Agent tool to invoke check1-agent as a sub-agent:
 - Pass: POD name, `epic_list_id`, `current_sprint_list_id`
 - Receive: CHECK 1 result (compliance %, violations list)
 
-### Step 4: Run CHECK 2
-Use the Agent tool to invoke check2-agent as a sub-agent:
-- Pass: POD name, `backlog_list_id`
-- Receive: CHECK 2 result (compliance %, violations list)
-
-### Step 5: Run CHECK 3
-Use the Agent tool to invoke check3-agent as a sub-agent:
+### Step 4: Run CHECK 2 + CHECK 3
+Use the Agent tool to invoke check2-check3-agent as a sub-agent:
 - Pass: POD name, `backlog_list_id`, `current_sprint_list_id`
-- Receive: CHECK 3 result (compliance %, violations list)
+- Receive: both CHECK 2 result and CHECK 3 result (compliance %, violations list for each)
 
-### Step 5.5: Validate CHECK results
+### Step 5: Validate CHECK results
 Before proceeding, verify that all three check agents returned valid results:
 - Each result must contain a line like `CHECK N — Name: [%] → [Status]` with an actual compliance percentage
 - If any check agent returned empty, null, or no compliance %, print:
@@ -73,13 +68,9 @@ ERROR: check[N]-agent returned no data for $ARGUMENTS. Stopping audit.
 ```
 Stop processing. Do NOT proceed to subsequent PODs or steps. Do NOT fill in placeholder/fabricated compliance values.
 
-### Step 6: Sprint N+1 Check (timing-gated)
-Compute the window: `[current_sprint_end_date - 5 days, current_sprint_end_date]`
-- If today is within this window AND `next_sprint_list_id` is not null:
-  - Use the Agent tool to invoke check4-agent as a sub-agent
-  - Pass: POD name, `folder_id`, `next_sprint_list_id`, `today`, `current_sprint_end_date`
-  - Receive: CHECK 4 result (compliance %, violations list)
-- Otherwise: Sprint N+1 result = "N/A — outside readiness window"
+### Step 6: Sprint N+1 Check (TEMPORARILY DISABLED)
+> ⚠️ CHECK 4 is disabled. Do NOT invoke check4-agent. Always use: Sprint N+1 result = "N/A"
+> To re-enable: replace this block with the original step (check4-agent.md is unchanged).
 
 ### Step 7: Compute compliance and statuses
 For each check, compute compliance % and determine status:
@@ -93,8 +84,8 @@ Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the followi
 - Check 3 — Key Fields Updated: [compliance %] → [status label]
 - Check 4 — Sprint N+1: [compliance % or "N/A"] → [status label or "N/A"]
 - Observations (EPIC section): [verbatim violations from check1-agent, or "None"]
-- Observations (Backlog section): [verbatim violations from check2-agent, or "None"]
-- Observations (Current Sprint section): [verbatim violations from check3-agent, or "None"]
+- Observations (Backlog section): [verbatim violations from check2-check3-agent CHECK 2 block, or "None"]
+- Observations (Current Sprint section): [verbatim violations from check2-check3-agent CHECK 3 block, or "None"]
 - Observations (Sprint N+1 section): [verbatim violations from check4-agent, or "None", or "N/A — outside window"]
 
 doc-updater will look up the sprint_readiness_task_id, map each % to an option ID, and post the mandatory audit summary comment.
@@ -111,14 +102,7 @@ doc-updater will look up the sprint_readiness_task_id, map each % to an option I
 
 ## Task Fetching Rule (Token-efficient)
 Always pass `statuses` to `filter_tasks` — never fetch everything then filter.
-- CHECK 1: `filter_tasks(list_ids=[epic_list_id], ...)`
-- CHECK 2: `filter_tasks` to get task IDs (custom_fields not included in response), then `clickup_get_task` per task to inspect Epic custom_field
-  - Exception to no-loop rule: filter_tasks response strips custom_fields; per-task lookups required to detect Epic connections
-- CHECK 3: `filter_tasks(list_ids=[backlog_list_id], statuses=[8 active statuses])`, then keep only tasks where locations includes active_sprint_list_id
-- CHECK 4: `filter_tasks(list_ids=[next_sprint_list_id], statuses=["Task Definition Complete", "Ready For Dev"])`
-  - Note: Sprint confirmation is now determined at the list level (via `clickup_get_folder`), not by task status
-General principle: Never call `clickup_get_task` in a loop UNLESS the batch tool doesn't return needed data.
-- CHECK 2: per-task get_task required — filter_tasks omits custom_fields
-- CHECK 3: per-task get_task required — filter_tasks omits time_estimate, points, and custom_fields
-- CHECK 4: per-task get_task required — filter_tasks omits points and custom_fields
-- CHECK 1: per-task get_task NOT required — filter_tasks returns assignees
+- CHECK 1: `filter_tasks(list_ids=[epic_list_id], ...)` — no per-task get_task needed (assignees in response)
+- CHECK 2+3: check2-check3-agent shares one backlog filter + one sprint filter; calls `clickup_get_task` per unique task sequentially (one at a time) — used for both Epic detection (check2) and field validation (check3)
+- CHECK 4: `filter_tasks(list_ids=[next_sprint_list_id], statuses=["Task Definition Complete", "Ready For Dev"])`, then `clickup_get_task` per task sequentially — filter_tasks omits points and custom_fields
+  - Sprint confirmation is determined at the list level (via `clickup_get_folder`), not by task status

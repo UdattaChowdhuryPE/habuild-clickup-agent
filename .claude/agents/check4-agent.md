@@ -57,6 +57,8 @@ Call `mcp__clickup__clickup_filter_tasks(list_ids=[next_sprint_list_id], statuse
 **Per-task detail fetch:**
 For each task returned, call `mcp__clickup__clickup_get_task(task_id=<task_id>)` to retrieve the full task object including `points` and `custom_fields`. Use this full task object for all field validation below. This is required because `clickup_filter_tasks` does not return `points` or `custom_fields` in its response.
 
+> **Call one at a time, sequentially** — do NOT batch or parallelize these calls. Sequential pacing keeps you within API rate limits.
+
 **Exclusions:** Exclude tasks with status "Not Started" or "Rejected" (these are already excluded by the status filter above, but confirm before scoring).
 
 **Output Format (ONLY):**
