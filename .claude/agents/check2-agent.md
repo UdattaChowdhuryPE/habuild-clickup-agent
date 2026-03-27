@@ -28,6 +28,14 @@ Call `mcp__clickup__clickup_filter_tasks(list_ids=[backlog_list_id], statuses=["
 
 > These are the ONLY 8 active statuses across all PODs and all lists: `"IN DEV"`, `"IN PR REVIEW"`, `"DEV COMPLETED"`, `"IN TESTING"`, `"READY FOR DEPLOYMENT"`, `"ACCEPTANCE TEST"`, `"DEPLOYED ON PROD"`, `"PRODUCTION TESTING"`. Do NOT use or reference any other status names.
 
+**Step 1b — QA [TESTING] exclusion (QA POD only):**
+If the POD is **QA**, remove any task from the Step 1 results whose name contains `[TESTING]` (case-insensitive). After removal, if no tasks remain, treat this identically to the "Total In-Scope Tasks = 0" edge case and output:
+```
+CHECK 2 — Backlog Hygiene: 100% → Done
+  Violations: None (no active backlog tasks)
+```
+Then stop — do not proceed to Step 2.
+
 **Step 2 — Inspect Epic connection per task:**
 The filter response does NOT include `custom_fields`. To detect Epic connections, you must call `mcp__clickup__clickup_get_task` for each task from Step 1.
 
