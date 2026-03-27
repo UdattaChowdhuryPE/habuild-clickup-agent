@@ -32,14 +32,12 @@ Validate that each task has ALL of the following fields set. Fields are found in
 - Sprint Points → `points` is a positive integer (> 0); value of 0 or null = missing
 
 **Custom fields (inside the `custom_fields` array — match by `name`):**
-- Sprint Type → find entry in `custom_fields[]` using this priority order:
-  1. Exact match: `name == "🏷️ Type (Sprint)"`
-  2. Substring fallback: `name` contains "Type (Sprint)" (case-insensitive)
-  If neither matches, treat Sprint Type as missing.
-  Note: never match a field named "Type" alone — it must contain "Sprint".
-  `value` is non-null (any value including integer 0 = set; null or absent = missing)
+- **🏷️ Type (Sprint)** → find entry in `custom_fields[]` where `name == "🏷️ Type (Sprint)"` (exact match). If not found, try substring fallback: `name` contains `"Type (Sprint)"` (case-insensitive).
+  - Do NOT look for a field named "Sprint Type", "Sprint (Type)", or "Type" alone — the field must match "🏷️ Type (Sprint)" or contain "Type (Sprint)".
+  - `value` is non-null (any value including integer 0 = set; null or absent = missing)
+  - When reporting this field as missing in violations, always refer to it as **🏷️ Type (Sprint)**.
 
-If the `custom_fields` array is absent or does not contain an entry for Sprint Type, treat that field as missing.
+If the `custom_fields` array is absent or does not contain a matching entry, treat **🏷️ Type (Sprint)** as missing.
 
 **Fetching:**
 Call `mcp__clickup__clickup_filter_tasks(list_ids=[next_sprint_list_id], statuses=["Task Definition Complete", "Ready For Dev"])` to get the list of tasks in the next sprint.
