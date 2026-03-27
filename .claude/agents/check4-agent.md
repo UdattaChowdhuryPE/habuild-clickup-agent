@@ -20,8 +20,13 @@ If `today < window_start` OR `today > current_sprint_end_date`:
 
 Otherwise, proceed to task fetching below.
 
-**Task (after timing gate passes):** Fetch tasks from the next sprint list with statuses: "Task Definition Complete", "Ready For Dev".
+**Task (after timing gate passes):** Fetch tasks from the next sprint list with statuses: "Task Definition Complete", "Ready For Dev", "Confirmed".
 
+**Sprint Status Determination (before field validation):**
+Check if any task has status `"Confirmed"`. If yes: **output Done and stop** (field validation skipped).
+Otherwise, proceed to field validation below only if at least 1 task exists.
+
+**Field Validation (only if ≥1 task and none are Confirmed):**
 Validate that each task has ALL of the following fields set. Fields are found in two places in the API response:
 
 **Standard fields (top-level on the task object):**
@@ -40,9 +45,9 @@ Validate that each task has ALL of the following fields set. Fields are found in
 If the `custom_fields` array is absent or does not contain a matching entry, treat **🏷️ Type (Sprint)** as missing.
 
 **Fetching:**
-Call `mcp__clickup__clickup_filter_tasks(list_ids=[next_sprint_list_id], statuses=["Task Definition Complete", "Ready For Dev"])` to get the list of tasks in the next sprint.
+Call `mcp__clickup__clickup_filter_tasks(list_ids=[next_sprint_list_id], statuses=["Task Definition Complete", "Ready For Dev", "Confirmed"])` to get the list of tasks in the next sprint.
 
-> The ONLY pre-sprint statuses are `"Task Definition Complete"` and `"Ready For Dev"`. Do NOT reference, invent, or validate any other status names.
+> The pre-sprint statuses are `"Task Definition Complete"`, `"Ready For Dev"`, and `"Confirmed"`. Do NOT reference or invent any other status names.
 
 **Per-task detail fetch:**
 For each task returned, call `mcp__clickup__clickup_get_task(task_id=<task_id>)` to retrieve the full task object including `points` and `custom_fields`. Use this full task object for all field validation below. This is required because `clickup_filter_tasks` does not return `points` or `custom_fields` in its response.
@@ -50,18 +55,25 @@ For each task returned, call `mcp__clickup__clickup_get_task(task_id=<task_id>)`
 **Exclusions:** Exclude tasks with status "Not Started" or "Rejected" (these are already excluded by the status filter above, but confirm before scoring).
 
 **Output Format (ONLY):**
+
+If any task has status `"Confirmed"`:
 ```
-CHECK 4 — Sprint N+1 Readiness: [%] → [Status]
+CHECK 4 — Sprint N+1 Readiness: Done
+  Status: Sprint confirmed
+  Violations: None
+```
+
+If ≥1 task and none are Confirmed (field validation applies):
+```
+CHECK 4 — Sprint N+1 Readiness: In Progress
+  Status: X tasks pending confirmation
   Violations: @[task name](taskId) — [missing fields]; ...
-  (or "Violations: None" if compliant)
+  (or "Violations: None" if all fields valid)
 ```
 
-Calculate compliance as: Valid Tasks / Total In-Scope Tasks × 100
-
-Status: ≥97% = Done, 30–96% = In Progress, <30% = Not Started
-
-If the next sprint list returns 0 tasks:
+If 0 tasks in next sprint:
 ```
-CHECK 4 — Sprint N+1 Readiness: 100% → Done
-  Violations: None (no tasks in next sprint)
+CHECK 4 — Sprint N+1 Readiness: Not Started
+  Status: No tasks in next sprint
+  Violations: None
 ```

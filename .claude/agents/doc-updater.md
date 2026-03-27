@@ -70,14 +70,15 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
 1. Look up POD name in the Task ID table above to get the whitelisted `task_id`.
 
 2. Determine status option IDs from audit results:
-   - For each check (Epics, Backlog, Key Fields, Sprint N+1), map compliance % to option ID:
+   - For Epics, Backlog, and Key Fields: map compliance % to option ID:
      - ≥97%: Done option ID
      - 30–96%: In Progress option ID
      - <30%: Not Started option ID
-   - **Sprint N+1 dropdown handling:**
-     - If check4 returned a **valid compliance %** (e.g., "75% → In Progress", "100% → Done"): include the mapped option ID in the custom_fields array
-     - If check4 returned **"N/A → outside readiness window"** (timing gate failed — check was not run): **omit the Sprint N+1 dropdown entry entirely from custom_fields** — do NOT clear or reset it; leave the column unchanged in the doc. Record "N/A — outside readiness window" in the Observations/Comments Sprint N+1 section.
-     - **All other check4 results** (including "0 tasks found") produce a valid compliance % and must be handled as normal — do NOT treat them as N/A.
+   - **Sprint N+1 dropdown handling (direct status mapping):**
+     - If check4 returned **"Done"**: include Done option ID `2a9e6e0a-c6a9-4536-9be3-7ae882937794` in custom_fields
+     - If check4 returned **"In Progress"**: include In Progress option ID `7c487eaa-e8b3-4614-9801-a491073942cf` in custom_fields
+     - If check4 returned **"Not Started"**: include Not Started option ID `cda167b6-2006-4936-97b6-91836e06b677` in custom_fields
+     - If check4 returned **"N/A → outside readiness window"** (timing gate failed): **omit the Sprint N+1 dropdown entry entirely from custom_fields** — do NOT clear or reset it; leave the column unchanged in the doc. Record "N/A — outside readiness window" in the Observations/Comments Sprint N+1 section.
 
 3. Build observations text following the Observations Format above.
 
@@ -105,9 +106,9 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
    CHECK 1 — Epics Setup: [%] → [Status]
    CHECK 2 — Backlog Hygiene: [%] → [Status]
    CHECK 3 — Key Fields Updated: [%] → [Status]
-   CHECK 4 — Sprint N+1: [% → Done/In Progress/Not Started] OR [N/A — outside readiness window]
+   CHECK 4 — Sprint N+1: [%] → [Status] OR [N/A — outside readiness window]
 
-   [Observations block if any violations, using @[task name](taskId) mention syntax]
+   [Observations block if any violations, using / Mention a Task mention syntax]
    ```
 
    Always include the CHECK 4 line, even if "N/A".
