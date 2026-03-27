@@ -1,0 +1,6 @@
+# API tokens / secrets
+.mcp.json
+.claude/settings.local.json
+
+# OS artifacts
+.DS_Store

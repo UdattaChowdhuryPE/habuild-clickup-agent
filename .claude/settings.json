@@ -1,0 +1,261 @@
+{
+  "env": {
+    "CLICKUP_API_TOKEN": "REDACTED_TOKEN"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__clickup__clickup_update_task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "TASK_ID=$(jq -r '.tool_input.task_id // .tool_input.id // .tool_input.taskId // empty'); case \"$TASK_ID\" in 86d2899n5|86d289c19|86d289j7m|86d289j9h|86d289ja7|86d289jav|86d289jbz|86d289jca) exit 0 ;; *) echo 'BLOCKED: Direct task writes are prohibited. Only Sprint Readiness dashboard rows may be updated.' >&2; exit 2 ;; esac"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_create_task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Creating tasks is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_delete_task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Deleting tasks is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_move_task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Moving tasks is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_add_tag_to_task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying task tags is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_remove_tag_from_task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying task tags is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_add_task_dependency",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying task dependencies is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_remove_task_dependency",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying task dependencies is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_add_task_link",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying task links is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_remove_task_link",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying task links is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_add_task_to_list",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying list membership is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_remove_task_from_list",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying list membership is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_create_task_comment",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "TASK_ID=$(jq -r '.tool_input.task_id // .tool_input.id // .tool_input.taskId // empty'); case \"$TASK_ID\" in 86d2899n5|86d289c19|86d289j7m|86d289j9h|86d289ja7|86d289jav|86d289jbz|86d289jca) exit 0 ;; *) echo 'BLOCKED: Creating task comments is prohibited outside Sprint Readiness tasks.' >&2; exit 2 ;; esac"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_update_list",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying lists is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_create_list",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Creating lists is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_create_list_in_folder",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Creating lists is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_update_folder",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying folders is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_create_folder",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Creating folders is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_add_time_entry",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Adding time entries is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_start_time_tracking",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Time tracking is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_stop_time_tracking",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Time tracking is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_attach_task_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Attaching files to tasks is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_create_reminder",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Creating reminders is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_update_reminder",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Modifying reminders is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_send_chat_message",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Sending chat messages is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_create_document",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Creating documents is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_create_document_page",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Creating document pages is prohibited.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__clickup__clickup_update_document_page",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BLOCKED: Updating document pages is prohibited.' >&2; exit 2"
+          }
+        ]
+      }
+    ]
+  }
+}
