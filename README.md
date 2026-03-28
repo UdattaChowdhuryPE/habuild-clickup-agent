@@ -32,9 +32,9 @@ User Command (/audit-all or /audit-pod)
 [Skill: audit-pod / audit-all]
   ├─ For each POD:
   │  ├─ [pod-auditor] discovers active/next sprint lists
-  │  ├─ [check1-agent] validates epic assignees
-  │  ├─ [check2-check3-agent] validates backlog epic connections + sprint field completeness
-  │  ├─ [check4-agent] validates next-sprint readiness (timing-gated, currently disabled)
+  │  ├─ [epics-setup-agent] validates epic assignees
+  │  ├─ [backlog-hygiene-and-sprint-fields-agent] validates backlog epic connections + sprint field completeness
+  │  ├─ [next-sprint-readiness-agent] validates next-sprint readiness (timing-gated, currently disabled)
   │  └─ [doc-updater] writes results to Sprint Readiness dashboard
   │
   └─ Prints audit summary table
@@ -202,9 +202,9 @@ clickup-agent/
     │
     ├── agents/                        # Sub-agent definitions
     │   ├── pod-auditor.md             # Sprint discovery (finds active/next sprint)
-    │   ├── check1-agent.md            # Epic assignee validation
-    │   ├── check2-check3-agent.md     # Backlog epic connection + sprint field validation (combined)
-    │   ├── check4-agent.md            # Next-sprint field validation (timing-gated, currently disabled)
+    │   ├── epics-setup-agent.md       # Epic assignee validation
+    │   ├── backlog-hygiene-and-sprint-fields-agent.md # Backlog epic connection + sprint field validation (combined)
+    │   ├── next-sprint-readiness-agent.md # Next-sprint field validation (timing-gated, currently disabled)
     │   └── doc-updater.md             # Dashboard writer
     │
     └── skills/                        # User-invocable slash commands

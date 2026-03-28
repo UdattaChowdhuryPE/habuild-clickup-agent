@@ -1,5 +1,5 @@
 ---
-name: check4-agent
+name: next-sprint-readiness-agent
 description: Runs CHECK 4 (Sprint N+1 Readiness) for a single POD. Validates that tasks scheduled for the next sprint have all required fields set.
 tools: mcp__clickup__clickup_filter_tasks, mcp__clickup__clickup_get_task, mcp__clickup__clickup_get_folder
 model: haiku

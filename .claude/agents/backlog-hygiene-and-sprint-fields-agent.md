@@ -1,11 +1,11 @@
 ---
-name: check2-check3-agent
-description: Runs CHECK 2 (Backlog Hygiene) and CHECK 3 (Key Fields Updated) for a single POD in one pass, sharing API calls.
+name: backlog-hygiene-and-sprint-fields-agent
+description: Fetches backlog and sprint tasks for a POD, then runs CHECK 2 (Backlog Hygiene) and CHECK 3 (Key Fields Updated), sharing a single set of get_task API calls.
 tools: mcp__clickup__clickup_filter_tasks, mcp__clickup__clickup_get_task
 model: haiku
 ---
 
-## CHECK 2 + CHECK 3 — Combined Agent
+## Backlog Hygiene + Sprint Fields Agent
 
 You have READ-ONLY access to ClickUp. Do NOT modify any tasks.
 
@@ -25,7 +25,11 @@ You have READ-ONLY access to ClickUp. Do NOT modify any tasks.
 
 ---
 
-### Step 1 — Fetch backlog tasks (shared):
+## Phase 1 — Data Fetching (Shared Infrastructure)
+
+**Steps 1–4b below are shared between CHECK 2 and CHECK 3. Both checks depend on the task data prepared here. Do not duplicate these fetch calls.**
+
+### Step 1 — Fetch backlog tasks:
 Call `mcp__clickup__clickup_filter_tasks(list_ids=[backlog_list_id], statuses=["IN DEV", "IN PR REVIEW", "DEV COMPLETED", "IN TESTING", "READY FOR DEPLOYMENT", "ACCEPTANCE TEST", "DEPLOYED ON PROD", "PRODUCTION TESTING"])`.
 Call this set **B2**.
 
@@ -49,7 +53,7 @@ For every unique task ID in the Unique fetch set, call `mcp__clickup__clickup_ge
 > Do NOT approximate, skip tasks, or infer field values from task names.
 > **Call one at a time, sequentially** — do NOT batch or parallelize these calls.
 > **After every 5 calls, make the next call immediately (no special pause needed) — the sequential pacing itself keeps you within rate limits.**
-> Build a map of task_id → full task object for use in Steps 4b, 5 and 6.
+> Build a map of task_id → full task object for use in Steps 4b, Phase 2 and Phase 3.
 
 ### Step 4b — Derive sprint task sets (in-memory, using full task map):
 Using the full task objects from the map built in Step 4:
@@ -58,26 +62,30 @@ Using the full task objects from the map built in Step 4:
 
 ---
 
-### Step 5 — CHECK 2: Backlog Hygiene
+## Phase 2 — CHECK 2: Backlog Hygiene
 
-**QA [TESTING] exclusion (QA POD only):**
+**Task:** Evaluate every backlog task for an active Epic connection.
+
+### QA [TESTING] exclusion (QA POD only):
 If the POD is **QA**, remove from B2 any task whose name contains `[TESTING]` (case-insensitive) before scoring. If no tasks remain after removal, output:
 ```
 CHECK 2 — Backlog Hygiene: 100% → Done
   Violations: None (no active backlog tasks)
 ```
-Then skip to Step 6.
+Then skip to Phase 3.
 
-**Edge case:** If B2 is empty (or empty after QA exclusion), output the above and skip to Step 6.
+### Edge case:
+If B2 is empty (or empty after QA exclusion), output the above and skip to Phase 3.
 
-**Evaluate each task in B2** (after QA exclusion) using the full task object from the map in Step 4:
+### Evaluate each task in B2:
+Use the full task object from the map in Step 4.
 
 **Exemptions (do NOT flag — skip Epic check):**
 1. Tasks tagged "independent"
 2. Tasks tagged "cross-pod"
 3. Tasks tagged "adhoc"
-4. **NEW** — Tasks NOT in current sprint: `locations` array does NOT include `active_sprint_list_id`
-5. **NEW** — Bug or Adhoc task type: `🏷️ Type (Sprint)` custom field label equals "Bug" or "Adhoc" (case-insensitive)
+4. Tasks NOT in current sprint: `locations` array does NOT include `active_sprint_list_id`
+5. Bug or Adhoc task type: `🏷️ Type (Sprint)` custom field label equals "Bug" or "Adhoc" (case-insensitive)
 
 **For each non-exempt task:**
 1. Find the Epic custom field by matching `id == <epic_field_id_for_this_pod>` in `custom_fields[]`
@@ -92,7 +100,7 @@ Validate ONLY Epic connection. Ignore Sprint Type, Due Date, Sprint Points, Time
 - Check if label (case-insensitive) equals "bug" or "adhoc"
 - If found and matches, task is exempt
 
-**Output (ONLY):**
+### Output (ONLY):
 ```
 CHECK 2 — Backlog Hygiene: [%] → [Status]
   Violations: @[task name](taskId) — missing Epic; ...
@@ -104,16 +112,20 @@ Status: ≥97% = Done, 30–96% = In Progress, <30% = Not Started
 
 ---
 
-### Step 6 — CHECK 3: Key Fields Updated
+## Phase 3 — CHECK 3: Key Fields Updated
 
-**Edge case:** If Sprint task set is empty, output:
+**Task:** Evaluate every sprint task for 6 required fields.
+
+### Edge case:
+If Sprint task set is empty, output:
 ```
 CHECK 3 — Key Fields Updated: 100% → Done
   Violations: None (no active sprint tasks)
 ```
 Then stop.
 
-**Evaluate each task in Sprint task set** using the full task object from the map in Step 4.
+### Evaluate each task in Sprint task set:
+Use the full task object from the map in Step 4.
 
 Validate all 6 fields are set on each task:
 
@@ -132,7 +144,7 @@ Validate all 6 fields are set on each task:
 
 If `custom_fields` is absent or has no matching entry, treat **🏷️ Type (Sprint)** as missing.
 
-**Output (ONLY):**
+### Output (ONLY):
 ```
 CHECK 3 — Key Fields Updated: [%] → [Status]
   Violations: @[task name](taskId) — [missing fields]; ...

@@ -1,5 +1,5 @@
 ---
-name: check1-agent
+name: epics-setup-agent
 description: Runs CHECK 1 (Epics Setup) for a single POD. Validates epic Assignee field.
 tools: mcp__clickup__clickup_filter_tasks
 model: haiku

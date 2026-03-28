@@ -54,12 +54,12 @@ ERROR: Could not identify active sprint for [POD name]. Skipping.
 ```
 
 ### Step 2: Run CHECK 1
-Use the Agent tool to invoke check1-agent as a sub-agent:
+Use the Agent tool to invoke epics-setup-agent as a sub-agent:
 - Pass: POD name, `epic_list_id` (from table), `current_sprint_list_id` (from Step 1)
 - Receive back: CHECK 1 result block with compliance % and violations
 
-### Step 3: Run CHECK 2 + CHECK 3
-Use the Agent tool to invoke check2-check3-agent as a sub-agent with EXACTLY this prompt (substitute values):
+### Step 3: Run Backlog Hygiene + Sprint Fields Checks
+Use the Agent tool to invoke backlog-hygiene-and-sprint-fields-agent as a sub-agent with EXACTLY this prompt (substitute values):
 
 ```
 Run CHECK 2 (Backlog Hygiene) and CHECK 3 (Key Fields Updated) for [POD name] POD.
@@ -85,8 +85,8 @@ ERROR: check[N]-agent returned no data for [POD name]. Stopping audit.
 Stop processing. Do NOT proceed to subsequent steps or other PODs. Do NOT fill in placeholder/fabricated values.
 
 ### Step 5: Sprint N+1 Check (TEMPORARILY DISABLED)
-> ⚠️ CHECK 4 is disabled. Do NOT invoke check4-agent. Always use: Sprint N+1 result = "N/A"
-> To re-enable: replace this block with the original step (check4-agent.md is unchanged).
+> ⚠️ CHECK 4 is disabled. Do NOT invoke next-sprint-readiness-agent. Always use: Sprint N+1 result = "N/A"
+> To re-enable: replace this block with the original step (next-sprint-readiness-agent.md is unchanged).
 
 ### Step 6: Update Dashboard
 Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the following — do NOT omit any field:
@@ -95,10 +95,10 @@ Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the followi
 - Check 2 — Backlog Hygiene: [compliance %] → [status label]
 - Check 3 — Key Fields Updated: [compliance %] → [status label]
 - Check 4 — Sprint N+1: [compliance % or "N/A"] → [status label or "N/A"]
-- Observations (EPIC section): [verbatim violations from check1-agent, or "None"]
-- Observations (Backlog section): [verbatim violations from check2-check3-agent CHECK 2 block, or "None"]
-- Observations (Current Sprint section): [verbatim violations from check2-check3-agent CHECK 3 block, or "None"]
-- Observations (Sprint N+1 section): [verbatim violations from check4-agent, or "None", or "N/A — outside window"]
+- Observations (EPIC section): [verbatim violations from epics-setup-agent, or "None"]
+- Observations (Backlog section): [verbatim violations from backlog-hygiene-and-sprint-fields-agent CHECK 2 block, or "None"]
+- Observations (Current Sprint section): [verbatim violations from backlog-hygiene-and-sprint-fields-agent CHECK 3 block, or "None"]
+- Observations (Sprint N+1 section): [verbatim violations from next-sprint-readiness-agent, or "None", or "N/A — outside window"]
 
 ### Step 7: Print progress line
 `POD [name]: Epics=[status], Backlog=[status], KeyFields=[status], SprintN+1=[status or N/A]`
