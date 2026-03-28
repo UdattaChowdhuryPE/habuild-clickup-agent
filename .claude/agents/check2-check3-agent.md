@@ -35,10 +35,10 @@ Call this set **B2**.
 Call `mcp__clickup__clickup_filter_tasks(list_ids=[active_sprint_list_id], statuses=["IN DEV", "IN PR REVIEW", "DEV COMPLETED", "IN TESTING", "READY FOR DEPLOYMENT", "ACCEPTANCE TEST", "DEPLOYED ON PROD", "PRODUCTION TESTING"])`.
 Call this set **B_direct**.
 
-### Step 3 — Derive task sets (in-memory, no API calls):
-- **Set A** = tasks in B2 where the `locations` array includes `active_sprint_list_id`
-- **Sprint task set** = union of A and B_direct, deduplicated by task ID
+### Step 3 — Derive fetch set (in-memory, no API calls):
 - **Unique fetch set** = union of B2 and B_direct, deduplicated by task ID (all tasks needing full detail)
+
+> ⚠️ Do NOT derive Set A or Sprint task set here. The `locations` field is absent in `filter_tasks` responses — it is only returned by `get_task`. Deriving Set A here will always produce an empty set. Set A and Sprint task set are derived in Step 4b after full task details are fetched.
 
 > ⚠️ **CRITICAL: STATUS IS NOT A VALIDATION CRITERION.** The 8 statuses above are used ONLY as a filter to fetch tasks — never to validate them. Do NOT flag, mention, or report a task's status as a violation.
 
@@ -49,7 +49,12 @@ For every unique task ID in the Unique fetch set, call `mcp__clickup__clickup_ge
 > Do NOT approximate, skip tasks, or infer field values from task names.
 > **Call one at a time, sequentially** — do NOT batch or parallelize these calls.
 > **After every 5 calls, make the next call immediately (no special pause needed) — the sequential pacing itself keeps you within rate limits.**
-> Build a map of task_id → full task object for use in Steps 5 and 6.
+> Build a map of task_id → full task object for use in Steps 4b, 5 and 6.
+
+### Step 4b — Derive sprint task sets (in-memory, using full task map):
+Using the full task objects from the map built in Step 4:
+- **Set A** = tasks in B2 where the full task object's `locations` array contains an entry with `id == active_sprint_list_id`
+- **Sprint task set** = union of Set A and B_direct, deduplicated by task ID
 
 ---
 
@@ -68,9 +73,11 @@ Then skip to Step 6.
 **Evaluate each task in B2** (after QA exclusion) using the full task object from the map in Step 4:
 
 **Exemptions (do NOT flag — skip Epic check):**
-- Tasks tagged "independent"
-- Tasks tagged "cross-pod"
-- Tasks tagged "adhoc"
+1. Tasks tagged "independent"
+2. Tasks tagged "cross-pod"
+3. Tasks tagged "adhoc"
+4. **NEW** — Tasks NOT in current sprint: `locations` array does NOT include `active_sprint_list_id`
+5. **NEW** — Bug or Adhoc task type: `🏷️ Type (Sprint)` custom field label equals "Bug" or "Adhoc" (case-insensitive)
 
 **For each non-exempt task:**
 1. Find the Epic custom field by matching `id == <epic_field_id_for_this_pod>` in `custom_fields[]`
@@ -78,6 +85,12 @@ Then skip to Step 6.
 3. Epic NOT CONNECTED: `value` is missing, `null`, or `[]` → VIOLATION
 
 Validate ONLY Epic connection. Ignore Sprint Type, Due Date, Sprint Points, Time Estimate, Assignee, Priority.
+
+**How to detect Bug/Adhoc type (exemption 5):**
+- Find the custom field in `custom_fields[]` where `name == "🏷️ Type (Sprint)"` (exact match)
+- Extract the selected option's label (or value if it's a string)
+- Check if label (case-insensitive) equals "bug" or "adhoc"
+- If found and matches, task is exempt
 
 **Output (ONLY):**
 ```
