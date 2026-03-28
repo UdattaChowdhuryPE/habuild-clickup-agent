@@ -68,9 +68,10 @@ ERROR: check[N]-agent returned no data for $ARGUMENTS. Stopping audit.
 ```
 Stop processing. Do NOT proceed to subsequent PODs or steps. Do NOT fill in placeholder/fabricated compliance values.
 
-### Step 6: Sprint N+1 Check (TEMPORARILY DISABLED)
-> ⚠️ CHECK 4 is disabled. Do NOT invoke next-sprint-readiness-agent. Always use: Sprint N+1 result = "N/A"
-> To re-enable: replace this block with the original step (next-sprint-readiness-agent.md is unchanged).
+### Step 6: Run CHECK 4 — Sprint N+1 Readiness
+Use the Agent tool to invoke next-sprint-readiness-agent as a sub-agent:
+- Pass: POD name, `folder_id`, `next_sprint_list_id` (from Step 2), `today`, `current_sprint_end_date` (from Step 2)
+- Receive: CHECK 4 result (status: Done / In Progress / Not Started / N/A → outside readiness window, and violations list)
 
 ### Step 7: Compute compliance and statuses
 For each check, compute compliance % and determine status:
