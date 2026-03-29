@@ -101,9 +101,9 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
 5. Call `mcp__clickup__clickup_create_task_comment` on the same `task_id` with the audit summary. This step is mandatory. Comment format:
 
    > ⚠️ **CRITICAL — TASK MENTION FORMAT IN COMMENTS:**
-   > Every task reference in the comment body MUST use ClickUp mention syntax: **/Mention a Task [taskId]**
-   > Example: `/Mention a Task 86d2egatz — missing 🏷️ Type (Sprint)`
-   > Do NOT use: raw IDs only (#86d2egatz), @[name](id) format, or plain task names without the mention prefix.
+   > Every task reference in the comment body MUST use ClickUp mention syntax: **@[task name](taskId)**
+   > Example: `@[Task](86d2egatz) — missing 🏷️ Type (Sprint)`
+   > Do NOT use: raw IDs only (#86d2egatz), /Mention a Task format, or plain task names without the mention prefix.
 
    ```
    Sprint Readiness Audit — [POD name]
@@ -114,10 +114,10 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
    CHECK 4 — Sprint N+1: [%] → [Status] OR [N/A — outside readiness window]
 
    Observations (if any violations):
-   EPIC: /Mention a Task [taskId] — [reason]; ...
-   Backlog: /Mention a Task [taskId] — missing Epic; ...
-   Current Sprint: /Mention a Task [taskId] — [missing fields]; ...
-   Sprint N+1: /Mention a Task [taskId] — [missing fields]; ...
+   EPIC: @[Task](taskId) — [reason]; ...
+   Backlog: @[Task](taskId) — missing Epic; ...
+   Current Sprint: @[Task](taskId) — [missing fields]; ...
+   Sprint N+1: @[Task](taskId) — [missing fields]; ...
    (Omit any section with no violations)
    ```
 
@@ -127,6 +127,6 @@ Each issue should be concise and reference tasks using ClickUp mention syntax: @
 
 ## CRITICAL
 - ONLY write to Sprint Readiness list tasks (whitelisted IDs). Never modify or comment on POD tasks.
-- **In comment text body: ALWAYS use /Mention a Task [taskId] for every task reference — never raw IDs, task names, or @[name](id) format. This is non-negotiable.**
+- **In comment text body: ALWAYS use @[task name](taskId) for every task reference — never raw IDs, task names, or /Mention a Task format. This is non-negotiable.**
 - The Observations/Comments custom field (text) continues to use: @[task name](taskId)
 - Pass option IDs (not labels) to dropdown custom fields
