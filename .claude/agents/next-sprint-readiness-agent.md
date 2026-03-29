@@ -49,17 +49,17 @@ Validate that each task has ALL of the following fields set. Fields are found in
 If the `custom_fields` array is absent or does not contain a matching entry, treat **🏷️ Type (Sprint)** as missing.
 
 **Fetching:**
-Call `mcp__clickup__clickup_filter_tasks(list_ids=[next_sprint_list_id], statuses=["Task Definition Complete", "Ready For Dev"])` to get the list of tasks in the next sprint.
+Call `mcp__clickup__clickup_filter_tasks(list_ids=[next_sprint_list_id])` to get all tasks in the next sprint list. Do NOT filter by status — the sprint has not started yet and tasks may be in any pre-sprint status.
 
-> The pre-sprint task statuses are `"Task Definition Complete"` and `"Ready For Dev"`. Do NOT reference or invent any other status names.
-> Sprint confirmation is now determined at the list level (via clickup_get_folder), not by task status.
+> Fetch all tasks regardless of status. The pre-sprint window may have tasks in "Not Started", "Task Definition Complete", "Ready For Dev", or other planning states.
+> Sprint confirmation is determined at the list level (via clickup_get_folder), not by task status.
 
 **Per-task detail fetch:**
 For each task returned, call `mcp__clickup__clickup_get_task(task_id=<task_id>)` to retrieve the full task object including `points` and `custom_fields`. Use this full task object for all field validation below. This is required because `clickup_filter_tasks` does not return `points` or `custom_fields` in its response.
 
 > **Call one at a time, sequentially** — do NOT batch or parallelize these calls. Sequential pacing keeps you within API rate limits.
 
-**Exclusions:** Exclude tasks with status "Not Started" or "Rejected" (these are already excluded by the status filter above, but confirm before scoring).
+**Exclusions:** Exclude tasks with status "Rejected" only. Tasks with status "Not Started" are valid sprint entries and must be counted and validated.
 
 **Output Format (ONLY):**
 
