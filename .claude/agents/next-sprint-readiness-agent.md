@@ -28,7 +28,7 @@ Before fetching tasks, check sprint-level confirmation:
 4. If the sprint is confirmed: **output Done and stop** (no task fetch, field validation skipped)
 5. Otherwise: proceed to task fetch and field validation below
 
-**Task (after sprint confirmation check passes):** Fetch tasks from the next sprint list with statuses: "Task Definition Complete", "Ready For Dev".
+**Task (after sprint confirmation check passes):** Fetch ALL tasks from the next sprint list. Do NOT filter by status.
 
 **Field Validation (only if ≥1 task):**
 Validate that each task has ALL of the following fields set. Fields are found in two places in the API response:
@@ -77,10 +77,16 @@ CHECK 4 — Sprint N+1 Readiness: Not Started
   Violations: None
 ```
 
-If ≥1 task (field validation applies):
+If ≥1 task and all tasks pass field validation:
+```
+CHECK 4 — Sprint N+1 Readiness: Done
+  Status: X tasks — all fields valid
+  Violations: None
+```
+
+If ≥1 task and some tasks fail field validation:
 ```
 CHECK 4 — Sprint N+1 Readiness: In Progress
-  Status: X tasks pending confirmation
-  Violations: @[task name](taskId) — [missing fields]; ...
-  (or "Violations: None" if all fields valid)
+  Status: X tasks — Y with missing fields
+  Violations: [task name] — [missing fields]; ...
 ```
