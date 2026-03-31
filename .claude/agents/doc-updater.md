@@ -64,7 +64,7 @@ Current Sprint: <issue 1>; <issue 2>; ...
 
 Sprint N+1: <issue 1>; <issue 2>; ...
 
-Each issue should be concise and reference tasks by task name directly (plain text, no mention syntax).
+Each issue should be concise and reference tasks as **[task name] (taskId)** — always include both the task name and task ID in plain text.
 
 ## Process
 1. Look up POD name in the Task ID table above to get the whitelisted `task_id`.
@@ -75,10 +75,9 @@ Each issue should be concise and reference tasks by task name directly (plain te
      - 30–96%: In Progress option ID
      - <30%: Not Started option ID
    - **Sprint N+1 dropdown handling (direct status mapping):**
-     - If check4 returned **"Done"**: include Done option ID `2a9e6e0a-c6a9-4536-9be3-7ae882937794` in custom_fields
-     - If check4 returned **"In Progress"**: include In Progress option ID `7c487eaa-e8b3-4614-9801-a491073942cf` in custom_fields
      - If check4 returned **"Not Started"**: include Not Started option ID `cda167b6-2006-4936-97b6-91836e06b677` in custom_fields
-     - If check4 returned **"N/A → outside readiness window"** (timing gate failed): **omit the Sprint N+1 dropdown entry entirely from custom_fields** — do NOT clear or reset it; leave the column unchanged in the doc. Record "N/A — outside readiness window" in the Observations/Comments Sprint N+1 section.
+     - If check4 returned **"In Progress"**: include In Progress option ID `7c487eaa-e8b3-4614-9801-a491073942cf` in custom_fields
+     - If check4 returned **"N/A → outside window"** (timing gate failed): **omit the Sprint N+1 dropdown entry entirely from custom_fields** — do NOT update the column. Also do NOT include any CHECK 4 line or Sprint N+1 section in the Observations or the audit comment.
 
 3. Build observations text following the Observations Format above.
 
@@ -106,21 +105,22 @@ Each issue should be concise and reference tasks by task name directly (plain te
    CHECK 1 — Epics Setup: [%] → [Status]
    CHECK 2 — Backlog Hygiene: [%] → [Status]
    CHECK 3 — Key Fields Updated: [%] → [Status]
-   CHECK 4 — Sprint N+1: [%] → [Status] OR [N/A — outside readiness window]
+   CHECK 4 — Sprint N+1: [Status] (if inside readiness window; omit entirely if N/A)
 
    Observations (if any violations):
-   EPIC: [Task name] — [reason]; ...
-   Backlog: [Task name] — missing Epic; ...
-   Current Sprint: [Task name] — [missing fields]; ...
-   Sprint N+1: [Task name] — [missing fields]; ...
+   EPIC: [Task name] (taskId) — [reason]; ...
+   Backlog: [Task name] (taskId) — missing Epic; ...
+   Current Sprint: [Task name] (taskId) — [missing fields]; ...
+   Sprint N+1: [Task name] (taskId) — [reason]; ... (omit entire section if CHECK 4 is N/A or no violations)
    (Omit any section with no violations)
    ```
 
-   Always include the CHECK 4 line, even if "N/A".
+   - If CHECK 4 returned "N/A → outside window": omit CHECK 4 line entirely AND omit Sprint N+1 section from Observations.
+   - If CHECK 4 is inside the window: include it with Status only (no % shown for CHECK 4).
 
 6. Confirm both the update and comment succeeded.
 
 ## CRITICAL
 - ONLY write to Sprint Readiness list tasks (whitelisted IDs). Never modify or comment on POD tasks.
-- **In all text (comment body and Observations/Comments field): reference tasks by plain task name only — no mention syntax, no raw IDs, no @[...](taskId) format.**
+- **In all text (comment body and Observations/Comments field): reference tasks as `[Task name] (taskId)` — always include both the task name and the task ID in plain text. Do NOT use mention syntax (@[...]) or raw IDs alone.**
 - Pass option IDs (not labels) to dropdown custom fields

@@ -1,7 +1,7 @@
 ---
 name: next-sprint-readiness-agent
-description: Runs CHECK 4 (Sprint N+1 Readiness) for a single POD. Validates that tasks scheduled for the next sprint have all required fields set.
-tools: mcp__clickup__clickup_filter_tasks, mcp__clickup__clickup_get_task, mcp__clickup__clickup_get_folder
+description: Runs CHECK 4 (Sprint N+1 Readiness) for a single POD. Counts tasks in next sprint to determine readiness status (Not Started or In Progress). Only runs during the 5-day readiness window.
+tools: mcp__clickup__clickup_filter_tasks
 model: haiku
 ---
 
@@ -15,78 +15,36 @@ You have READ-ONLY access to ClickUp. Do NOT modify any tasks.
 Compute: `window_start = current_sprint_end_date − 5 days`
 
 If `today < window_start` OR `today > current_sprint_end_date`:
-- Return immediately: `CHECK 4 — Sprint N+1 Readiness: N/A → outside readiness window`
-- **Stop. Do NOT call any ClickUp tools.**
+- **OUTSIDE READINESS WINDOW** — Return immediately:
+  ```
+  CHECK 4 — Sprint N+1 Readiness: N/A → outside window
+  ```
+- **Stop. Do NOT call any ClickUp tools. No column update. No comment.**
 
-Otherwise, proceed to task fetching below.
+Otherwise, proceed to task counting below.
 
-**Sprint Confirmation Check (after timing gate passes):**
-Before fetching tasks, check sprint-level confirmation:
-1. Call `mcp__clickup__clickup_get_folder(folder_id=folder_id)` to get the folder with its lists
-2. Find the list in the response whose `id == next_sprint_list_id`
-3. Inspect the list object for a confirmation property (e.g., `status`, `confirmed`, or similar boolean/flag field that ClickUp sets when the sprint is confirmed)
-4. If the sprint is confirmed: **output Done and stop** (no task fetch, field validation skipped)
-5. Otherwise: proceed to task fetch and field validation below
+### Inside Readiness Window — Task Count Only
 
-**Task (after sprint confirmation check passes):** Fetch ALL tasks from the next sprint list. Do NOT filter by status.
+**No field validation. No "Done" status. No compliance %.**
 
-**Field Validation (only if ≥1 task):**
-Validate that each task has ALL of the following fields set. Fields are found in two places in the API response:
-
-**Standard fields (top-level on the task object):**
-- Assignee → `assignees` array is non-empty
-- Due Date → `due_date` is non-null and non-empty
-- Priority → `priority` is non-null
-- Time Estimate → `time_estimate` is a positive integer (> 0); value of 0 or null = missing
-- Sprint Points → `points` is a positive integer (> 0); value of 0 or null = missing
-
-**Custom fields (inside the `custom_fields` array — match by `name`):**
-- **🏷️ Type (Sprint)** → find entry in `custom_fields[]` where `name == "🏷️ Type (Sprint)"` (exact match). If not found, try substring fallback: `name` contains `"Type (Sprint)"` (case-insensitive).
-  - Do NOT look for a field named "Sprint Type", "Sprint (Type)", or "Type" alone — the field must match "🏷️ Type (Sprint)" or contain "Type (Sprint)".
-  - `value` is non-null (any value including integer 0 = set; null or absent = missing)
-  - When reporting this field as missing in violations, always refer to it as **🏷️ Type (Sprint)**.
-
-If the `custom_fields` array is absent or does not contain a matching entry, treat **🏷️ Type (Sprint)** as missing.
-
-**Fetching:**
-Call `mcp__clickup__clickup_filter_tasks(list_ids=[next_sprint_list_id])` to get all tasks in the next sprint list. Do NOT filter by status — the sprint has not started yet and tasks may be in any pre-sprint status.
-
-> Fetch all tasks regardless of status. The pre-sprint window may have tasks in "Not Started", "Task Definition Complete", "Ready For Dev", or other planning states.
-> Sprint confirmation is determined at the list level (via clickup_get_folder), not by task status.
-
-**Per-task detail fetch:**
-For each task returned, call `mcp__clickup__clickup_get_task(task_id=<task_id>)` to retrieve the full task object including `points` and `custom_fields`. Use this full task object for all field validation below. This is required because `clickup_filter_tasks` does not return `points` or `custom_fields` in its response.
-
-> **Call one at a time, sequentially** — do NOT batch or parallelize these calls. Sequential pacing keeps you within API rate limits.
-
-**Exclusions:** Exclude tasks with status "Rejected" only. Tasks with status "Not Started" are valid sprint entries and must be counted and validated.
+1. Call `mcp__clickup__clickup_filter_tasks(list_ids=[next_sprint_list_id])` to fetch all tasks in the next sprint list (no status filter).
+2. Count tasks, excluding any with status "Rejected".
+3. Apply status rules based on count:
+   - **0 tasks** → `Not Started`
+   - **≥1 task** → `In Progress`
 
 **Output Format (ONLY):**
-
-If sprint is confirmed (detected at list level before task fetch):
-```
-CHECK 4 — Sprint N+1 Readiness: Done
-  Status: Sprint confirmed
-  Violations: None
-```
 
 If 0 tasks in next sprint:
 ```
 CHECK 4 — Sprint N+1 Readiness: Not Started
   Status: No tasks in next sprint
-  Violations: None
 ```
 
-If ≥1 task and all tasks pass field validation:
-```
-CHECK 4 — Sprint N+1 Readiness: Done
-  Status: X tasks — all fields valid
-  Violations: None
-```
-
-If ≥1 task and some tasks fail field validation:
+If ≥1 task in next sprint:
 ```
 CHECK 4 — Sprint N+1 Readiness: In Progress
-  Status: X tasks — Y with missing fields
-  Violations: [task name] — [missing fields]; ...
+  Status: X tasks in next sprint
 ```
+
+No violations section. No per-task field validation. No "Done" status.
