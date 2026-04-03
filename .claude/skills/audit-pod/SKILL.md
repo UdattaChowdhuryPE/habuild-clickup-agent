@@ -59,8 +59,15 @@ Use the Agent tool to invoke backlog-hygiene-and-sprint-fields-agent as a sub-ag
 - Pass: POD name, `backlog_list_id`, `current_sprint_list_id`
 - Receive: both CHECK 2 result and CHECK 3 result (compliance %, violations list for each)
 
-### Step 5: Validate CHECK results
-Before proceeding, verify that all three check agents returned valid results:
+### Step 5: Run CS Checks (Ticket Description & Acceptance Criteria)
+Use the Agent tool to invoke cs-checks-agent as a sub-agent:
+- Pass: POD name, `current_sprint_list_id`
+- Receive: CS_CHECKS_RESULT with description_total, description_missing_count, description_violations, ac_eligible_count, ac_missing_count, ac_violations
+
+Parse the CS_CHECKS_RESULT output block and extract all six values. Store them for passing to doc-updater in Step 9.
+
+### Step 6: Validate CHECK results
+Before proceeding, verify that all three check agents (CHECK 1, 2, 3) returned valid results:
 - Each result must contain a line like `CHECK N — Name: [%] → [Status]` with an actual compliance percentage
 - If any check agent returned empty, null, or no compliance %, print:
 ```
@@ -68,31 +75,37 @@ ERROR: check[N]-agent returned no data for $ARGUMENTS. Stopping audit.
 ```
 Stop processing. Do NOT proceed to subsequent PODs or steps. Do NOT fill in placeholder/fabricated compliance values.
 
-### Step 6: Run CHECK 4 — Sprint N+1 Readiness
+Also verify that cs-checks-agent returned a valid CS_CHECKS_RESULT block with all six required fields.
+
+### Step 7: Run CHECK 4 — Sprint N+1 Readiness
 Use the Agent tool to invoke next-sprint-readiness-agent as a sub-agent:
 - Pass: POD name, `folder_id`, `next_sprint_list_id` (from Step 2), `today`, `current_sprint_end_date` (from Step 2)
 - Receive: CHECK 4 result (status: Done / In Progress / Not Started / N/A → outside readiness window, and violations list)
 
-### Step 7: Compute compliance and statuses
+### Step 8: Compute compliance and statuses
 For each check, compute compliance % and determine status:
 - Done (≥97%) / In Progress (30–96%) / Not Started (<30%)
 
-### Step 8: Update Dashboard
+### Step 10: Update Dashboard
 Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the following — do NOT omit any field:
 - POD: [pod name from $ARGUMENTS]
 - Check 1 — Epics Setup: [compliance %] → [status label: Done / In Progress / Not Started]
 - Check 2 — Backlog Hygiene: [compliance %] → [status label]
 - Check 3 — Key Fields Updated: [compliance %] → [status label]
 - Check 4 — Sprint N+1: [compliance % or "N/A"] → [status label or "N/A"]
+- Check 5 — Ticket Description: [missing_count], [violations list] (from cs-checks-agent)
+- Check 6 — Acceptance Criteria: [missing_count], [violations list] (from cs-checks-agent)
 - Observations (EPIC section): [verbatim violations from epics-setup-agent, or "None"]
 - Observations (Backlog section): [verbatim violations from backlog-hygiene-and-sprint-fields-agent CHECK 2 block, or "None"]
 - Observations (Current Sprint section): [verbatim violations from backlog-hygiene-and-sprint-fields-agent CHECK 3 block, or "None"]
 - Observations (Sprint N+1 section): [verbatim violations from next-sprint-readiness-agent, or "None", or "N/A — outside window"]
+- Observations (🎫 Ticket Description section): [violations from cs-checks-agent, or "None"]
+- Observations (👍 Acceptance Criteria section): [violations from cs-checks-agent, or "None"]
 
 doc-updater will look up the sprint_readiness_task_id, map each % to an option ID, and post the mandatory audit summary comment.
 
-### Step 9: Print result
-`POD $ARGUMENTS: Epics=[status], Backlog=[status], KeyFields=[status], SprintN+1=[status or N/A]`
+### Step 11: Print result
+`POD $ARGUMENTS: Epics=[status], Backlog=[status], KeyFields=[status], SprintN+1=[status or N/A], Desc=[count], AC=[count]`
 
 ## Constraints
 - Do NOT modify any POD tasks

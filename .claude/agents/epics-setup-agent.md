@@ -26,7 +26,7 @@ Do NOT check Due Date, Sprint Points, Time Estimate, or Sprint Type on Epics (th
 **Output Format (ONLY):**
 ```
 CHECK 1 — Epics Setup: [%] → [Status]
-  Violations: @[epic name](epicId) — [reason]; ...
+  Violations: [epic name] (epicId) — [reason]; ...
   (or "Violations: None" if compliant)
 ```
 

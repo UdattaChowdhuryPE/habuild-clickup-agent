@@ -84,6 +84,13 @@ ERROR: check[N]-agent returned no data for [POD name]. Stopping audit.
 ```
 Stop processing. Do NOT proceed to subsequent steps or other PODs. Do NOT fill in placeholder/fabricated values.
 
+### Step 4.5: Run CS Checks (Ticket Description & Acceptance Criteria)
+Use the Agent tool to invoke cs-checks-agent as a sub-agent:
+- Pass: POD name, `current_sprint_list_id` (from Step 1)
+- Receive: CS_CHECKS_RESULT with description_total, description_missing_count, description_violations, ac_eligible_count, ac_missing_count, ac_violations
+
+Parse the CS_CHECKS_RESULT output block and extract all six values. Store them for passing to doc-updater in Step 6.
+
 ### Step 5: Run CHECK 4 — Sprint N+1 Readiness
 Use the Agent tool to invoke next-sprint-readiness-agent as a sub-agent:
 - Pass: POD name, `folder_id`, `next_sprint_list_id` (from Step 1), `today`, `current_sprint_end_date` (from Step 1)
@@ -96,13 +103,17 @@ Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the followi
 - Check 2 — Backlog Hygiene: [compliance %] → [status label]
 - Check 3 — Key Fields Updated: [compliance %] → [status label]
 - Check 4 — Sprint N+1: [compliance % or "N/A"] → [status label or "N/A"]
+- Check 5 — Ticket Description: [missing_count], [violations list] (from cs-checks-agent)
+- Check 6 — Acceptance Criteria: [missing_count], [violations list] (from cs-checks-agent)
 - Observations (EPIC section): [verbatim violations from epics-setup-agent, or "None"]
 - Observations (Backlog section): [verbatim violations from backlog-hygiene-and-sprint-fields-agent CHECK 2 block, or "None"]
 - Observations (Current Sprint section): [verbatim violations from backlog-hygiene-and-sprint-fields-agent CHECK 3 block, or "None"]
 - Observations (Sprint N+1 section): [verbatim violations from next-sprint-readiness-agent, or "None", or "N/A — outside window"]
+- Observations (🎫 Ticket Description section): [violations from cs-checks-agent, or "None"]
+- Observations (👍 Acceptance Criteria section): [violations from cs-checks-agent, or "None"]
 
 ### Step 7: Print progress line
-`POD [name]: Epics=[status], Backlog=[status], KeyFields=[status], SprintN+1=[status or N/A]`
+`POD [name]: Epics=[status], Backlog=[status], KeyFields=[status], SprintN+1=[status or N/A], Desc=[count], AC=[count]`
 
 ### Step 8: Continue to next POD
 

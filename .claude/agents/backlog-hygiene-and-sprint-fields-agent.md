@@ -67,7 +67,7 @@ Using the full task objects from the map built in Step 4:
 **Task:** Evaluate every backlog task for an active Epic connection.
 
 ### QA [TESTING] exclusion (QA POD only):
-If the POD is **QA**, remove from B2 any task whose name contains `[TESTING]` (case-insensitive) before scoring. If no tasks remain after removal, output:
+If the POD is **QA**, remove from B2 any task whose name contains `[TESTING]` anywhere (case-insensitive substring match, including tasks like `[PROD - TESTING] ...` whose names also contain that substring). If no tasks remain after removal, output:
 ```
 CHECK 2 — Backlog Hygiene: 100% → Done
   Violations: None (no active backlog tasks)
@@ -103,7 +103,7 @@ Validate ONLY Epic connection. Ignore Sprint Type, Due Date, Sprint Points, Time
 ### Output (ONLY):
 ```
 CHECK 2 — Backlog Hygiene: [%] → [Status]
-  Violations: @[task name](taskId) — missing Epic; ...
+  Violations: [task name] (taskId) — missing Epic; ...
   (or "Violations: None" if compliant)
 ```
 
@@ -147,7 +147,7 @@ If `custom_fields` is absent or has no matching entry, treat **🏷️ Type (Spr
 ### Output (ONLY):
 ```
 CHECK 3 — Key Fields Updated: [%] → [Status]
-  Violations: @[task name](taskId) — [missing fields]; ...
+  Violations: [task name] (taskId) — [missing fields]; ...
   (or "Violations: None" if compliant)
 ```
 

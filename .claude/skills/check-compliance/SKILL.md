@@ -12,8 +12,8 @@ Read and display the current "Tech Team Sprint Readiness" list without running a
 2. Parse each task's custom fields and/or description for compliance values
 3. Display the current compliance status for all 8 PODs in a clean table format:
 
-| POD | Epics Setup | Backlog Hygiene | Key Fields Updated | Observations |
-|-----|-------------|-----------------|-------------------|--------------|
+| POD | 🚢 Epics Setup | 🏬 Backlog Hygiene | 📌 Key Fields Updated | ⏭️ Sprint N+1 | 🎫 Ticket Description - CS | 👍 Acceptance Criteria - CS | Observations |
+|-----|-------------|-----------------|-------------------|------------|----------------------------|----------------------------|--------------|
 
 4. Highlight any PODs with "Not Started" status
 5. Count total: Done / In Progress / Not Started across all checks

@@ -7,6 +7,24 @@ model: haiku
 
 You are responsible for updating the "Tech Team Sprint Readiness" list in ClickUp.
 
+## Input Parameters
+
+The orchestrator will pass:
+- `pod_name` — name of the POD
+- `check1_compliance` — CHECK 1 compliance % (0–100)
+- `check2_compliance` — CHECK 2 compliance % (0–100)
+- `check3_compliance` — CHECK 3 compliance % (0–100)
+- `check4_status` — CHECK 4 status ("Not Started", "In Progress", or "N/A → outside window")
+- `check1_violations` — array of violations (may be empty)
+- `check2_violations` — array of violations (may be empty)
+- `check3_violations` — array of violations (may be empty)
+- `check4_violations` — string describing next sprint status (may be empty)
+- `sprint_discovery_warning` — optional fallback warning message
+- `description_missing_count` — CHECK 5 count (int)
+- `description_violations` — semicolon-separated task details `[name] (id)` (may be empty string)
+- `ac_missing_count` — CHECK 6 count (int)
+- `ac_violations` — semicolon-separated task details `[name] (id)` (may be empty string)
+
 ## Target List
 - URL: https://app.clickup.com/9002212861/v/l/6-901613935111-1
 - List ID: 901613935111
@@ -46,6 +64,10 @@ Sprint N+1: 01f24ae9-fc86-4598-8d45-527a34cbf57a
   In Progress: 7c487eaa-e8b3-4614-9801-a491073942cf
   Not Started: cda167b6-2006-4936-97b6-91836e06b677
 
+🎫 Ticket Description - CS: 0e17bb38-608f-4fff-b039-68c8c12ef0ee (text field)
+
+👍 Acceptance Criteria - CS: a8fe9699-4603-4021-b62e-1947dff60c36 (text field)
+
 Observations/Comments: b7185f34-f4ae-4f58-88e1-7b31d62d4c1d
 ```
 
@@ -64,6 +86,10 @@ Current Sprint: <issue 1>; <issue 2>; ...
 
 Sprint N+1: <issue 1>; <issue 2>; ...
 
+🎫 Ticket Description: <task name> (taskId); ...
+
+👍 Acceptance Criteria: <task name> (taskId); ...
+
 Each issue should be concise and reference tasks as **[task name] (taskId)** — always include both the task name and task ID in plain text.
 
 ## Process
@@ -81,7 +107,11 @@ Each issue should be concise and reference tasks as **[task name] (taskId)** —
 
 3. Build observations text following the Observations Format above.
 
-4. Call `mcp__clickup__clickup_update_task` on the `task_id` with:
+4. Build text values for the CS checks:
+   - `description_value` = `"<description_missing_count> missing"` if count > 0, else `"None"`
+   - `ac_value` = `"<ac_missing_count> missing"` if count > 0, else `"None"`
+
+5. Call `mcp__clickup__clickup_update_task` on the `task_id` with:
    ```json
    {
      "custom_fields": [
@@ -89,15 +119,18 @@ Each issue should be concise and reference tasks as **[task name] (taskId)** —
        { "id": "da81ca65-1378-459e-b4bb-43f9304bce59", "value": "<backlog_option_id>" },
        { "id": "c271ad3b-7443-4a4b-a8f2-14554364e67f", "value": "<keyfields_option_id>" },
        { "id": "01f24ae9-fc86-4598-8d45-527a34cbf57a", "value": "<sprint_n1_option_id_or_omit_if_NA>" },
+       { "id": "0e17bb38-608f-4fff-b039-68c8c12ef0ee", "value": "<description_value>" },
+       { "id": "a8fe9699-4603-4021-b62e-1947dff60c36", "value": "<ac_value>" },
        { "id": "b7185f34-f4ae-4f58-88e1-7b31d62d4c1d", "value": "<observations_text>" }
      ]
    }
    ```
    - Use the field `id` (not `field_id`) as the key
    - Pass option IDs (not label strings) to all dropdown fields
+   - Pass text values (plain strings) to text fields
    - If Sprint N+1 is "N/A", omit that field from the array entirely
 
-5. Call `mcp__clickup__clickup_create_task_comment` on the same `task_id` with the audit summary. This step is mandatory. Comment format:
+6. Call `mcp__clickup__clickup_create_task_comment` on the same `task_id` with the audit summary. This step is mandatory. Comment format:
 
    ```
    Sprint Readiness Audit — [POD name]
@@ -106,17 +139,24 @@ Each issue should be concise and reference tasks as **[task name] (taskId)** —
    CHECK 2 — Backlog Hygiene: [%] → [Status]
    CHECK 3 — Key Fields Updated: [%] → [Status]
    CHECK 4 — Sprint N+1: [Status] (if inside readiness window; omit entirely if N/A)
+   CHECK 5 — Ticket Description: [count] missing
+   CHECK 6 — Acceptance Criteria: [count] missing
 
    Observations (if any violations):
-   EPIC: [Task name] (taskId) — [reason]; ...
-   Backlog: [Task name] (taskId) — missing Epic; ...
-   Current Sprint: [Task name] (taskId) — [missing fields]; ...
+   EPIC: [Task name] (taskId) — [reason]; ... (omit entire section if no violations)
+   Backlog: [Task name] (taskId) — missing Epic; ... (omit entire section if no violations)
+   Current Sprint: [Task name] (taskId) — [missing fields]; ... (omit entire section if no violations)
    Sprint N+1: [Task name] (taskId) — [reason]; ... (omit entire section if CHECK 4 is N/A or no violations)
+   🎫 Ticket Description: [Task name] (taskId); ... (omit entire section if no violations)
+   👍 Acceptance Criteria: [Task name] (taskId); ... (omit entire section if no violations)
    (Omit any section with no violations)
    ```
 
    - If CHECK 4 returned "N/A → outside window": omit CHECK 4 line entirely AND omit Sprint N+1 section from Observations.
    - If CHECK 4 is inside the window: include it with Status only (no % shown for CHECK 4).
+   - Always include CHECK 5 and CHECK 6 lines with their counts.
+   - For CS check violations, the descriptions_violations and ac_violations from cs-checks-agent are already formatted as `[task_name] (task_id); [task_name] (task_id)`, so include them directly.
+   - If a CS check has 0 violations (empty string), omit that entire section from Observations.
 
 6. Confirm both the update and comment succeeded.
 
