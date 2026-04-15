@@ -108,6 +108,11 @@ CHECK 2 — Backlog Hygiene: [%] → [Status]
 ```
 
 Calculate: Valid Tasks / Total In-Scope Tasks × 100
+
+> ⚠️ STATUS LOCK: Compute status ONLY from this table — never guess:
+> ≥97% → Done | 30–96% → In Progress | <30% → Not Started
+> Example: 50% → In Progress. 28% → Not Started. 97% → Done.
+
 Status: ≥97% = Done, 30–96% = In Progress, <30% = Not Started
 
 ---
@@ -152,4 +157,9 @@ CHECK 3 — Key Fields Updated: [%] → [Status]
 ```
 
 Calculate: Valid Tasks / Total Sprint Tasks × 100
+
+> ⚠️ STATUS LOCK: Compute status ONLY from this table — never guess:
+> ≥97% → Done | 30–96% → In Progress | <30% → Not Started
+> Example: 50% → In Progress. 28% → Not Started. 97% → Done.
+
 Status: ≥97% = Done, 30–96% = In Progress, <30% = Not Started
