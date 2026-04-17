@@ -32,4 +32,4 @@ CHECK 1 — Epics Setup: [%] → [Status]
 
 Calculate compliance as: Valid Epics / Total Active Epics × 100
 
-Status: ≥97% = Done, 30-96% = In Progress, <30% = Not Started
+Status: ≥97% = Done, 11-96% = In Progress, ≤10% = Not Started

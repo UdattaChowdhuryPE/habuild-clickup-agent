@@ -98,8 +98,8 @@ Each issue should be concise and reference tasks as **[task name] (taskId)** —
 2. Determine status option IDs from audit results:
    - For Epics, Backlog, and Key Fields: map compliance % to option ID:
      - ≥97%: Done option ID
-     - 30–96%: In Progress option ID
-     - <30%: Not Started option ID
+     - 11–96%: In Progress option ID
+     - ≤10%: Not Started option ID
    - **Sprint N+1 dropdown handling (direct status mapping):**
      - If check4 returned **"Not Started"**: include Not Started option ID `cda167b6-2006-4936-97b6-91836e06b677` in custom_fields
      - If check4 returned **"In Progress"**: include In Progress option ID `7c487eaa-e8b3-4614-9801-a491073942cf` in custom_fields

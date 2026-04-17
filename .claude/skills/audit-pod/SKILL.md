@@ -84,7 +84,7 @@ Use the Agent tool to invoke next-sprint-readiness-agent as a sub-agent:
 
 ### Step 8: Compute compliance and statuses
 For each check, compute compliance % and determine status:
-- Done (≥97%) / In Progress (30–96%) / Not Started (<30%)
+- Done (≥97%) / In Progress (11–96%) / Not Started (≤10%)
 
 ### Step 10: Update Dashboard
 Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the following — do NOT omit any field:

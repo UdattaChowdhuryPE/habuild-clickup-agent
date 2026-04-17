@@ -22,8 +22,8 @@ QA, Platform, Experience, Internal Tools, Beetu, Infra, Growth, Mobile
 |Compliance % |  Status     |
 |-------------|-------------|
 | ≥ 97%       |    Done     |
-| 30–96%      | In Progress |
-| < 30%       | Not Started |
+| 11–96%      | In Progress |
+| ≤ 10%       | Not Started |
 
 ## Error Handling
 - POD space not found → log "SKIPPED — space not found", continue

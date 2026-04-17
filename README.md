@@ -21,8 +21,8 @@ Each POD is scored on four compliance dimensions:
 
 Results are color-coded by compliance percentage:
 - **≥97%** = Done ✅
-- **30–96%** = In Progress 🟨
-- **<30%** = Not Started 🔴
+- **11–96%** = In Progress 🟨
+- **≤10%** = Not Started 🔴
 
 ## Architecture
 
