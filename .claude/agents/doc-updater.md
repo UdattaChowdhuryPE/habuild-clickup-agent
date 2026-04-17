@@ -143,12 +143,12 @@ Each issue should be concise and reference tasks as **[task name](https://app.cl
    CHECK 6 — Acceptance Criteria: [count] missing
 
    Observations (if any violations):
-   EPIC: [Task name](https://app.clickup.com/t/taskId) — [reason]; ... (omit entire section if no violations)
-   Backlog: [Task name](https://app.clickup.com/t/taskId) — missing Epic; ... (omit entire section if no violations)
-   Current Sprint: [Task name](https://app.clickup.com/t/taskId) — [missing fields]; ... (omit entire section if no violations)
-   Sprint N+1: [Task name](https://app.clickup.com/t/taskId) — [reason]; ... (omit entire section if CHECK 4 is N/A or no violations)
-   🎫 Ticket Description: [Task name](https://app.clickup.com/t/taskId); ... (omit entire section if no violations)
-   👍 Acceptance Criteria: [Task name](https://app.clickup.com/t/taskId); ... (omit entire section if no violations)
+   EPIC: Task name — https://app.clickup.com/t/taskId — [reason]; ... (omit entire section if no violations)
+   Backlog: Task name — https://app.clickup.com/t/taskId — missing Epic; ... (omit entire section if no violations)
+   Current Sprint: Task name — https://app.clickup.com/t/taskId — [missing fields]; ... (omit entire section if no violations)
+   Sprint N+1: Task name — https://app.clickup.com/t/taskId — [reason]; ... (omit entire section if CHECK 4 is N/A or no violations)
+   🎫 Ticket Description: Task name — https://app.clickup.com/t/taskId; ... (omit entire section if no violations)
+   👍 Acceptance Criteria: Task name — https://app.clickup.com/t/taskId; ... (omit entire section if no violations)
    (Omit any section with no violations)
    ```
 
@@ -162,5 +162,5 @@ Each issue should be concise and reference tasks as **[task name](https://app.cl
 
 ## CRITICAL
 - ONLY write to Sprint Readiness list tasks (whitelisted IDs). Never modify or comment on POD tasks.
-- **In all text (comment body and Observations/Comments field): reference tasks as markdown hyperlinks `[Task name](https://app.clickup.com/t/taskId)`. Do NOT use mention syntax (@[...]) or plain text IDs.**
+- **In all text (comment body and Observations/Comments field): reference tasks as plain text name followed by bare URL: `Task name — https://app.clickup.com/t/taskId`. Do NOT use markdown hyperlinks `[name](url)`, mention syntax (@[...]), or plain text IDs. Bare URLs are required so ClickUp auto-linkifies them in the comment.**
 - Pass option IDs (not labels) to dropdown custom fields

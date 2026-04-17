@@ -103,9 +103,11 @@ Validate ONLY Epic connection. Ignore Sprint Type, Due Date, Sprint Points, Time
 ### Output (ONLY):
 ```
 CHECK 2 — Backlog Hygiene: [%] → [Status]
-  Violations: [task name](https://app.clickup.com/t/taskId) — missing Epic; ...
+  Violations: [task.name from get_task] — https://app.clickup.com/t/taskId — missing Epic; ...
   (or "Violations: None" if compliant)
 ```
+
+> ⚠️ Use the exact `name` field from the full task object (from `get_task`). Never infer, abbreviate, or fabricate a task name.
 
 Calculate: Valid Tasks / Total In-Scope Tasks × 100
 
@@ -152,9 +154,11 @@ If `custom_fields` is absent or has no matching entry, treat **🏷️ Type (Spr
 ### Output (ONLY):
 ```
 CHECK 3 — Key Fields Updated: [%] → [Status]
-  Violations: [task name](https://app.clickup.com/t/taskId) — [missing fields]; ...
+  Violations: [task.name from get_task] — https://app.clickup.com/t/taskId — [missing fields]; ...
   (or "Violations: None" if compliant)
 ```
+
+> ⚠️ Use the exact `name` field from the full task object (from `get_task`). Never infer, abbreviate, or fabricate a task name.
 
 Calculate: Valid Tasks / Total Sprint Tasks × 100
 

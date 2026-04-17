@@ -38,7 +38,7 @@ For each task in the map:
 4. `description_missing_count = len(violations)`.
 5. Build two output strings:
    - `description_violation_ids` = comma-separated task IDs (or empty string if 0)
-   - `description_violation_details` = semicolon-separated markdown links `[task_name](https://app.clickup.com/t/task_id)` (or empty string if 0)
+   - `description_violation_details` = semicolon-separated format `task_name — https://app.clickup.com/t/task_id` (or empty string if 0)
 
 ## Phase 3 — CHECK 6: Acceptance Criteria
 
@@ -52,7 +52,7 @@ For each task in the map:
 5. `ac_missing_count = len(violations)`.
 6. Build two output strings:
    - `ac_violation_ids` = comma-separated task IDs (or empty string if 0)
-   - `ac_violation_details` = semicolon-separated markdown links `[task_name](https://app.clickup.com/t/task_id)` (or empty string if 0)
+   - `ac_violation_details` = semicolon-separated format `task_name — https://app.clickup.com/t/task_id` (or empty string if 0)
 
 ## Output Format (Strict)
 
@@ -68,17 +68,17 @@ ac_missing_count: [count from Phase 3]
 ac_violations: [semicolon-separated task details OR empty string]
 ```
 
-Where "task details" format is: markdown links `[task_name](https://app.clickup.com/t/task_id)` with semicolons separating multiple entries.
+Where "task details" format is: `task_name — https://app.clickup.com/t/task_id` with semicolons separating multiple entries.
 
 Example:
 ```
 CS_CHECKS_RESULT
 description_total: 12
 description_missing_count: 3
-description_violations: [Login Flow](https://app.clickup.com/t/123abc); [Payment Widget](https://app.clickup.com/t/456def); [Dashboard Widget](https://app.clickup.com/t/789ghi)
+description_violations: Login Flow — https://app.clickup.com/t/123abc; Payment Widget — https://app.clickup.com/t/456def; Dashboard Widget — https://app.clickup.com/t/789ghi
 ac_eligible_count: 9
 ac_missing_count: 2
-ac_violations: [Payment Widget](https://app.clickup.com/t/456def); [Config Panel](https://app.clickup.com/t/999zzz)
+ac_violations: Payment Widget — https://app.clickup.com/t/456def; Config Panel — https://app.clickup.com/t/999zzz
 ```
 
 If no violations, use empty string:
