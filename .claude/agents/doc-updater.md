@@ -80,17 +80,17 @@ SPRINT DISCOVERY WARNING: [fallback_note]
 
 EPIC: <issue 1>; <issue 2>; ...
 
-Backlog: <issue 1>; <issue 2>; ...
+Backlog <> EPIC connection missing: <issue 1>; <issue 2>; ...
 
 Current Sprint: <issue 1>; <issue 2>; ...
 
 Sprint N+1: <issue 1>; <issue 2>; ...
 
-🎫 Ticket Description: <task name> (taskId); ...
+🎫 Ticket Description Missing: <task name>; ...
 
-👍 Acceptance Criteria: <task name> (taskId); ...
+👍 Acceptance Criteria Missing: <task name>; ...
 
-Each issue should be concise and reference tasks as **[task name] (taskId)** — always include both the task name and task ID in plain text.
+Each issue should be concise and reference tasks as **[task name](https://app.clickup.com/t/taskId)** — a markdown hyperlink with task name and task ID embedded in the URL.
 
 ## Process
 1. Look up POD name in the Task ID table above to get the whitelisted `task_id`.
@@ -143,24 +143,24 @@ Each issue should be concise and reference tasks as **[task name] (taskId)** —
    CHECK 6 — Acceptance Criteria: [count] missing
 
    Observations (if any violations):
-   EPIC: [Task name] (taskId) — [reason]; ... (omit entire section if no violations)
-   Backlog: [Task name] (taskId) — missing Epic; ... (omit entire section if no violations)
-   Current Sprint: [Task name] (taskId) — [missing fields]; ... (omit entire section if no violations)
-   Sprint N+1: [Task name] (taskId) — [reason]; ... (omit entire section if CHECK 4 is N/A or no violations)
-   🎫 Ticket Description: [Task name] (taskId); ... (omit entire section if no violations)
-   👍 Acceptance Criteria: [Task name] (taskId); ... (omit entire section if no violations)
+   EPIC: [Task name](https://app.clickup.com/t/taskId) — [reason]; ... (omit entire section if no violations)
+   Backlog: [Task name](https://app.clickup.com/t/taskId) — missing Epic; ... (omit entire section if no violations)
+   Current Sprint: [Task name](https://app.clickup.com/t/taskId) — [missing fields]; ... (omit entire section if no violations)
+   Sprint N+1: [Task name](https://app.clickup.com/t/taskId) — [reason]; ... (omit entire section if CHECK 4 is N/A or no violations)
+   🎫 Ticket Description: [Task name](https://app.clickup.com/t/taskId); ... (omit entire section if no violations)
+   👍 Acceptance Criteria: [Task name](https://app.clickup.com/t/taskId); ... (omit entire section if no violations)
    (Omit any section with no violations)
    ```
 
    - If CHECK 4 returned "N/A → outside window": omit CHECK 4 line entirely AND omit Sprint N+1 section from Observations.
    - If CHECK 4 is inside the window: include it with Status only (no % shown for CHECK 4).
    - Always include CHECK 5 and CHECK 6 lines with their counts.
-   - For CS check violations, the descriptions_violations and ac_violations from cs-checks-agent are already formatted as `[task_name] (task_id); [task_name] (task_id)`, so include them directly.
+   - For CS check violations, the descriptions_violations and ac_violations from cs-checks-agent are already formatted as markdown links `[task_name](https://app.clickup.com/t/task_id); [task_name](https://app.clickup.com/t/task_id)`, so include them directly.
    - If a CS check has 0 violations (empty string), omit that entire section from Observations.
 
 6. Confirm both the update and comment succeeded.
 
 ## CRITICAL
 - ONLY write to Sprint Readiness list tasks (whitelisted IDs). Never modify or comment on POD tasks.
-- **In all text (comment body and Observations/Comments field): reference tasks as `[Task name] (taskId)` — always include both the task name and the task ID in plain text. Do NOT use mention syntax (@[...]) or raw IDs alone.**
+- **In all text (comment body and Observations/Comments field): reference tasks as markdown hyperlinks `[Task name](https://app.clickup.com/t/taskId)`. Do NOT use mention syntax (@[...]) or plain text IDs.**
 - Pass option IDs (not labels) to dropdown custom fields
