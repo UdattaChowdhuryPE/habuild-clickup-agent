@@ -1,7 +1,4 @@
 {
-  "env": {
-    "CLICKUP_API_TOKEN": "REDACTED_TOKEN"
-  },
   "hooks": {
     "PreToolUse": [
       {

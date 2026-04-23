@@ -1,5 +1,6 @@
 # API tokens / secrets
 .mcp.json
+.claude/settings.json
 .claude/settings.local.json
 
 # OS artifacts
