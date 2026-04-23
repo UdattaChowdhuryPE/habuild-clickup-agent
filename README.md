@@ -47,12 +47,16 @@ User Command (/audit-all or /audit-pod)
 1. **Claude Code** CLI installed and authenticated
 2. **ClickUp MCP server** accessible at `https://mcp.clickup.com/mcp`
 3. **ClickUp API token** with workspace access
+4. **`jq`** installed (required by the write-guard hooks)
+   - macOS: `brew install jq`
+   - Linux: `apt-get install jq` or equivalent
+   - Windows: Install via `choco install jq` or download from [jqlang.github.io](https://jqlang.github.io)
 
 ## Setup
 
 ### 1. Configure MCP Connection
 
-Edit `.mcp.json`:
+Create `.mcp.json` at the repo root:
 
 ```json
 {
@@ -60,30 +64,46 @@ Edit `.mcp.json`:
     "clickup": {
       "type": "http",
       "url": "https://mcp.clickup.com/mcp",
-      "auth": {
-        "type": "bearer",
-        "token": "${CLICKUP_API_TOKEN}"
+      "headers": {
+        "Authorization": "Bearer YOUR_CLICKUP_API_TOKEN_HERE"
       }
     }
   }
 }
 ```
 
-### 2. Store API Token
+Replace `YOUR_CLICKUP_API_TOKEN_HERE` with your actual token from ClickUp (Settings → Apps → API Token).
 
-Create `.claude/settings.local.json`:
+### 2. Configure Claude Code Settings
+
+Create `.claude/settings.local.json` inside the `.claude/` directory:
 
 ```json
 {
-  "projectSettings": {
-    "env": {
-      "CLICKUP_API_TOKEN": "pk_xxxxxxxxxxxxxxxxxxxxx"
-    }
+  "env": {
+    "CLICKUP_API_TOKEN": "YOUR_CLICKUP_API_TOKEN_HERE"
+  },
+  "enabledMcpjsonServers": ["clickup"],
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "mcp__clickup__clickup_get_workspace_hierarchy",
+      "mcp__clickup__clickup_filter_tasks",
+      "mcp__clickup__clickup_get_task",
+      "mcp__clickup__clickup_update_task",
+      "mcp__clickup__clickup_search",
+      "mcp__clickup__clickup_get_list",
+      "mcp__clickup__clickup_create_task_comment",
+      "mcp__clickup__clickup_get_folder",
+      "mcp__clickup__clickup_get_custom_fields",
+      "Agent(*)",
+      "Bash(jq *)"
+    ]
   }
 }
 ```
 
-The token is gitignored — never commit secrets.
+Replace `YOUR_CLICKUP_API_TOKEN_HERE` with your ClickUp API token. This file is gitignored — never commit secrets.
 
 ### 3. Verify MCP Connection
 
