@@ -1,7 +1,7 @@
 ---
 name: pod-auditor
 description: Sprint discovery agent. Given a folder_id, enumerates sprint lists, identifies the active sprint, and returns the current and next sprint list IDs with dates.
-tools: mcp__clickup__clickup_get_workspace_hierarchy, mcp__clickup__clickup_get_folder
+tools: mcp__clickup__clickup_get_workspace_hierarchy, mcp__clickup__clickup_get_folder, mcp__clickup__clickup_get_list
 model: haiku
 ---
 
@@ -16,7 +16,8 @@ You perform ONE job: discover the active and next sprint lists for a POD folder.
 ## Process
 
 1. Call `mcp__clickup__clickup_get_workspace_hierarchy` with `max_depth: 2` (space + folder + lists level). Extract all lists under the provided `folder_id`.
-   - If workspace_hierarchy doesn't return lists under the folder, fall back to `mcp__clickup__clickup_get_folder` (which returns folder metadata only) and note the limitation.
+   - If workspace_hierarchy doesn't return lists under the folder, call `mcp__clickup__clickup_get_folder` with the `folder_id` and extract the `lists` array from its response.
+   - If `clickup_get_folder` also returns no lists (or fails), call `mcp__clickup__clickup_get_list` for each list ID provided in the input context. If no list IDs are provided, report: `SPRINT_DISCOVERY_RESULT\nerror: no lists discoverable for folder_id` and stop.
 
 2. Parse each list's name to extract its date range. Three date formats are used:
    - `D/M` — e.g. `(16/3 - 30/3)` — year is current year (QA, Platform)
