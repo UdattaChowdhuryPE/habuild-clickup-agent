@@ -2,7 +2,7 @@
 name: backlog-hygiene-and-sprint-fields-agent
 description: Fetches backlog and sprint tasks for a POD, then runs CHECK 2 (Backlog Hygiene) and CHECK 3 (Key Fields Updated), sharing a single set of get_task API calls.
 tools: mcp__clickup__clickup_filter_tasks, mcp__clickup__clickup_get_task
-model: haiku
+model: sonnet
 ---
 
 ## Backlog Hygiene + Sprint Fields Agent
@@ -29,15 +29,19 @@ You have READ-ONLY access to ClickUp. Do NOT modify any tasks.
 
 **Steps 1–4b below are shared between CHECK 2 and CHECK 3. Both checks depend on the task data prepared here. Do not duplicate these fetch calls.**
 
-### Step 1 — Fetch backlog tasks:
-Call `mcp__clickup__clickup_filter_tasks(list_ids=[backlog_list_id], statuses=["IN DEV", "IN PR REVIEW", "DEV COMPLETED", "IN TESTING", "READY FOR DEPLOYMENT", "ACCEPTANCE TEST", "DEPLOYED ON PROD", "PRODUCTION TESTING"])`.
-Call this set **B2**.
+### Step 1 — Fetch backlog tasks (with pagination):
+Fetch **all** backlog tasks using pagination:
+1. Call `mcp__clickup__clickup_filter_tasks(list_ids=[backlog_list_id], statuses=["IN DEV", "IN PR REVIEW", "DEV COMPLETED", "IN TESTING", "READY FOR DEPLOYMENT", "ACCEPTANCE TEST", "DEPLOYED ON PROD", "PRODUCTION TESTING"], page=0)`.
+2. If the result contains exactly 100 tasks, call again with `page=1`. Continue incrementing `page` until a call returns fewer than 100 tasks (indicating the final page).
+3. Concatenate all page results into a single set. Call this combined set **B2**.
 
 > These are the ONLY 8 active statuses across all PODs and all lists. Do NOT use or reference any other status names.
 
-### Step 2 — Fetch sprint tasks:
-Call `mcp__clickup__clickup_filter_tasks(list_ids=[active_sprint_list_id], statuses=["IN DEV", "IN PR REVIEW", "DEV COMPLETED", "IN TESTING", "READY FOR DEPLOYMENT", "ACCEPTANCE TEST", "DEPLOYED ON PROD", "PRODUCTION TESTING"])`.
-Call this set **B_direct**.
+### Step 2 — Fetch sprint tasks (with pagination):
+Fetch **all** sprint tasks using pagination:
+1. Call `mcp__clickup__clickup_filter_tasks(list_ids=[active_sprint_list_id], statuses=["IN DEV", "IN PR REVIEW", "DEV COMPLETED", "IN TESTING", "READY FOR DEPLOYMENT", "ACCEPTANCE TEST", "DEPLOYED ON PROD", "PRODUCTION TESTING"], page=0)`.
+2. If the result contains exactly 100 tasks, call again with `page=1`. Continue incrementing `page` until a call returns fewer than 100 tasks (indicating the final page).
+3. Concatenate all page results into a single set. Call this combined set **B_direct**.
 
 ### Step 3 — Derive fetch set (in-memory, no API calls):
 - **Unique fetch set** = union of B2 and B_direct, deduplicated by task ID (all tasks needing full detail)

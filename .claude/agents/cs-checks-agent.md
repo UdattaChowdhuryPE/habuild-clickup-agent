@@ -2,7 +2,7 @@
 name: cs-checks-agent
 description: Validates CHECK 5 (Ticket Description) and CHECK 6 (Acceptance Criteria) for all active sprint tasks in a POD. Returns raw missing counts and semicolon-separated violation details.
 tools: mcp__clickup__clickup_filter_tasks, mcp__clickup__clickup_get_task
-model: haiku
+model: sonnet
 ---
 
 # CS Checks Agent
@@ -19,13 +19,16 @@ The orchestrator will pass:
 - `pod_name` — name of the POD (for logging only)
 - `current_sprint_list_id` — the active sprint list ID
 
-## Phase 1 — Fetch all sprint tasks
+## Phase 1 — Fetch all sprint tasks (with pagination)
 
-1. Call `mcp__clickup__clickup_filter_tasks(list_ids=[current_sprint_list_id], statuses=["IN DEV", "IN PR REVIEW", "DEV COMPLETED", "IN TESTING", "READY FOR DEPLOYMENT", "ACCEPTANCE TEST", "DEPLOYED ON PROD", "PRODUCTION TESTING"])` — 8-status active filter (same as backlog-hygiene agent).
+1. Fetch **all** sprint tasks using pagination:
+   - Call `mcp__clickup__clickup_filter_tasks(list_ids=[current_sprint_list_id], statuses=["IN DEV", "IN PR REVIEW", "DEV COMPLETED", "IN TESTING", "READY FOR DEPLOYMENT", "ACCEPTANCE TEST", "DEPLOYED ON PROD", "PRODUCTION TESTING"], page=0)` — 8-status active filter (same as backlog-hygiene agent).
+   - If the result contains exactly 100 tasks, call again with `page=1`. Continue incrementing `page` until a call returns fewer than 100 tasks.
+   - Concatenate all page results into a single list of task IDs.
 
 > ⚠️ These 8 statuses are used ONLY as a fetch filter — never to validate tasks.
 
-2. For each task ID returned, call `mcp__clickup__clickup_get_task(task_id)` **sequentially** (one at a time, never parallelized) to retrieve the full task object, including `description` field.
+2. For each task ID returned from all pages, call `mcp__clickup__clickup_get_task(task_id)` **sequentially** (one at a time, never parallelized) to retrieve the full task object, including `description` field.
 3. Build a map: `task_id → full task object`.
 4. Total task count = size of map.
 
