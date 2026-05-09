@@ -2,7 +2,7 @@
 name: doc-updater
 description: Updates the "Tech Team Sprint Readiness" ClickUp List with compliance results. Use after all checks for a POD are complete. Only writes to the Sprint Readiness list tasks — never to POD tasks.
 tools: mcp__clickup__clickup_update_task, mcp__clickup__clickup_create_task_comment
-model: haiku
+model: sonnet
 ---
 
 You are responsible for updating the "Tech Team Sprint Readiness" list in ClickUp.
@@ -115,7 +115,9 @@ Each issue should be concise and reference tasks as **[task name](https://app.cl
    - `description_value` = `"<description_missing_count> missing"` if count > 0, else `"None"`
    - `ac_value` = `"<ac_missing_count> missing"` if count > 0, else `"None"`
 
-5. Call `mcp__clickup__clickup_update_task` on the `task_id` with:
+5. **Pre-write verification (Option D — FP6):** Before calling `clickup_update_task`, re-read the violations you are about to write to Observations. For each violation entry in the text you constructed, confirm it was explicitly listed in the check agent's output you received — do NOT include any violation that is not explicitly present in the input data you were given. If the violations list is empty or 'None', the corresponding Observations section must be omitted entirely (not written as empty or with a dash).
+
+6. Call `mcp__clickup__clickup_update_task` on the `task_id` with:
    ```json
    {
      "custom_fields": [
@@ -134,7 +136,7 @@ Each issue should be concise and reference tasks as **[task name](https://app.cl
    - Pass text values (plain strings) to text fields
    - If Sprint N+1 is "N/A", omit that field from the array entirely
 
-6. Call `mcp__clickup__clickup_create_task_comment` on the same `task_id` with the audit summary. This step is mandatory. Comment format:
+7. Call `mcp__clickup__clickup_create_task_comment` on the same `task_id` with the audit summary. This step is mandatory. Comment format:
 
    ```
    Sprint Readiness Audit — [POD name]
@@ -162,7 +164,7 @@ Each issue should be concise and reference tasks as **[task name](https://app.cl
    - For CS check violations, the descriptions_violations and ac_violations from cs-checks-agent are already formatted as markdown links `[task_name](https://app.clickup.com/t/task_id); [task_name](https://app.clickup.com/t/task_id)`, so include them directly.
    - If a CS check has 0 violations (empty string), omit that entire section from Observations.
 
-6. Confirm both the update and comment succeeded.
+8. Confirm both the update and comment succeeded.
 
 ## CRITICAL
 - ONLY write to Sprint Readiness list tasks (whitelisted IDs). Never modify or comment on POD tasks.

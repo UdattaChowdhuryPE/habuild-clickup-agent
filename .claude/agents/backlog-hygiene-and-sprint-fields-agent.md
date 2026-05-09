@@ -84,6 +84,8 @@ If B2 is empty (or empty after QA exclusion), output the above and skip to Phase
 ### Evaluate each task in B2:
 Use the full task object from the map in Step 4.
 
+> ⚠️ **Field structure note (Option A — FP1):** The Epic custom field `value` can be returned as an array, an object `{"id": "...", "name": "..."}`, or a string ID. Epic is CONNECTED if `value` is present, non-null, and non-empty **regardless of type**. Epic is NOT CONNECTED only if `value` is missing, `null`, or an empty array `[]`. Do NOT assume a specific type.
+
 **Exemptions (do NOT flag — skip Epic check):**
 1. Tasks tagged "independent"
 2. Tasks tagged "cross-pod"
@@ -140,15 +142,17 @@ Use the full task object from the map in Step 4.
 
 Validate all 6 fields are set on each task:
 
+> ⚠️ **Default to compliant when ambiguous (Option B — FP4):** If a field's value is present in the API response but its structure is unexpected or ambiguous, treat the field as SET (compliant). Only flag a field as MISSING if the value is definitively null, absent, or empty. When in doubt, do NOT flag.
+
 **Standard fields (top-level on the task object):**
 - Assignee → `assignees` array is non-empty
 - Due Date → `due_date` is non-null and non-empty
-- Priority → `priority` is non-null
+- Priority → `priority` is present and non-null. Priority is a JSON object: `{"id": "2", "priority": "high", ...}`. It is SET if the field exists at the task level (regardless of the inner structure). It is MISSING only if the `priority` key is absent or `null` at the top level.
 - Time Estimate → `time_estimate` is a positive integer (> 0); value of 0 or null = missing
 - Sprint Points → `points` is a positive integer (> 0); value of 0 or null = missing
 
 **Custom fields (inside the `custom_fields` array — match by `name`):**
-- **🏷️ Type (Sprint)** → find entry where `name == "🏷️ Type (Sprint)"` (exact match). If not found, try substring fallback: `name` contains `"Type (Sprint)"` (case-insensitive).
+- **🏷️ Type (Sprint)** → find entry where `name` **contains** `"Type (Sprint)"` (case-insensitive substring match). This is the primary match strategy; do NOT require exact emoji prefix match due to Unicode variant issues (Option A — FP2). If not found by substring, omit this field from violations (treat as missing).
   - Do NOT look for "Sprint Type", "Sprint (Type)", or "Type" alone.
   - `value` is non-null (any value including integer 0 = set; null or absent = missing)
   - Report this field as **🏷️ Type (Sprint)** in violations.

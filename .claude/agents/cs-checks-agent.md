@@ -34,6 +34,8 @@ The orchestrator will pass:
 
 ## Phase 2 — CHECK 5: Ticket Description
 
+> ⚠️ **Default to compliant when ambiguous (Option B — FP4):** If a field's value is present in the API response but its structure is unexpected or ambiguous, treat the field as SET (compliant). Only flag a field as MISSING if the value is definitively null, absent, or empty. When in doubt, do NOT flag.
+
 For each task in the map:
 1. Get `task.description` field.
 2. If description is `null`, empty string `""`, or whitespace-only → **violation**.
