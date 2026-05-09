@@ -83,8 +83,15 @@ Use the Agent tool to invoke next-sprint-readiness-agent as a sub-agent:
 - Receive: CHECK 4 result (status: Done / In Progress / Not Started / N/A → outside readiness window, and violations list)
 
 ### Step 8: Compute compliance and statuses
-For each check, compute compliance % and determine status:
-- Done (≥97%) / In Progress (11–96%) / Not Started (≤10%)
+For each of CHECK 1, CHECK 2, and CHECK 3, map the compliance % to a status label using ONLY this table:
+
+> ⚠️ STATUS LOCK — derive status from % using ONLY these rules. Never guess, round, or carry over a label from a sub-agent.
+> | Compliance % | Status |
+> |---|---|
+> | ≥ 97% | Done |
+> | 11% – 96% | In Progress |
+> | ≤ 10% | Not Started |
+> Examples: 100% → Done. 97% → Done. 96% → In Progress. 50% → In Progress. 11% → In Progress. 10% → Not Started. 0% → Not Started.
 
 ### Step 10: Update Dashboard
 Use the Agent tool to invoke doc-updater as a sub-agent. Pass ALL of the following — do NOT omit any field:

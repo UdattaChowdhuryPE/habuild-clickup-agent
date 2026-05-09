@@ -100,6 +100,10 @@ Each issue should be concise and reference tasks as **[task name](https://app.cl
      - ≥97%: Done option ID
      - 11–96%: In Progress option ID
      - ≤10%: Not Started option ID
+
+   > ⚠️ STATUS LOCK: Derive status labels independently from compliance %. Do NOT use status labels passed by the orchestrator. Re-compute from % using:
+   > ≥97% → Done | 11–96% → In Progress | ≤10% → Not Started
+   > Examples: 96% → In Progress (NOT Done). 11% → In Progress (NOT Not Started). 10% → Not Started.
    - **Sprint N+1 dropdown handling (direct status mapping):**
      - If check4 returned **"Not Started"**: include Not Started option ID `cda167b6-2006-4936-97b6-91836e06b677` in custom_fields
      - If check4 returned **"In Progress"**: include In Progress option ID `7c487eaa-e8b3-4614-9801-a491073942cf` in custom_fields
