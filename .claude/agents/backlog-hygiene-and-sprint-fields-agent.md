@@ -106,6 +106,14 @@ Validate ONLY Epic connection. Ignore Sprint Type, Due Date, Sprint Points, Time
 - Check if label (case-insensitive) equals "bug" or "adhoc"
 - If found and matches, task is exempt
 
+### Post-exemption edge case:
+After applying all exemptions, if no in-scope tasks remain (denominator = 0), output:
+```
+CHECK 2 — Backlog Hygiene: 100% → Done
+  Violations: None (all tasks exempt)
+```
+Then skip to Phase 3. Do NOT compute a percentage over an empty denominator.
+
 ### Output (ONLY):
 ```
 CHECK 2 — Backlog Hygiene: [%] → [Status]
@@ -158,6 +166,14 @@ Validate all 6 fields are set on each task:
   - Report this field as **🏷️ Type (Sprint)** in violations.
 
 If `custom_fields` is absent or has no matching entry, treat **🏷️ Type (Sprint)** as missing.
+
+### Post-exemption edge case:
+After evaluation, if Sprint task set is empty or denominator = 0, output:
+```
+CHECK 3 — Key Fields Updated: 100% → Done
+  Violations: None (no in-scope sprint tasks)
+```
+Then stop. Do NOT compute a percentage over an empty denominator.
 
 ### Output (ONLY):
 ```

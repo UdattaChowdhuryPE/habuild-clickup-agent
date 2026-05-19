@@ -91,6 +91,20 @@ Use the Agent tool to invoke cs-checks-agent as a sub-agent:
 
 Parse the CS_CHECKS_RESULT output block and extract all six values. Store them for passing to doc-updater in Step 6.
 
+### Step 4.6: Re-derive compliance statuses (STATUS LOCK)
+For each of CHECK 1, CHECK 2, and CHECK 3, re-derive the status label from the compliance % received from the sub-agents. Use ONLY this table — never carry over a label verbatim from a sub-agent output:
+
+> ⚠️ STATUS LOCK — derive status from % using ONLY these rules. Never guess, round, or carry over a label from a sub-agent.
+> | Compliance % | Status |
+> |---|---|
+> | ≥ 97% | Done |
+> | 11% – 96% | In Progress |
+> | ≤ 10% | Not Started |
+> Examples: 100% → Done. 97% → Done. 96% → In Progress. 50% → In Progress. 11% → In Progress. 10% → Not Started. 0% → Not Started.
+
+If a sub-agent label does not match the re-derived label, use the re-derived label and log:
+`WARNING: CHECK [N] sub-agent label mismatch for [POD name]. Sub-agent said "[label]" but % was [%] → corrected to "[re-derived label]".`
+
 ### Step 5: Run CHECK 4 — Sprint N+1 Readiness
 Use the Agent tool to invoke next-sprint-readiness-agent as a sub-agent:
 - Pass: POD name, `folder_id`, `next_sprint_list_id` (from Step 1), `today`, `current_sprint_end_date` (from Step 1)
